@@ -1,0 +1,48 @@
+.angle-white-bottom {
+    margin-left: .1rem;
+    display: inline-block;
+    border: .1rem solid transparent;
+    border-top-color: #FFFFFF;
+    vertical-align: text-bottom;
+}
+
+.iphone-x-bottom {
+    padding-bottom: 30px;
+}
+
+.popup-header-fixed-wrap {
+    height: 44px;
+    width: 100%;
+    .vux-popup-header {
+        position: fixed;
+        width: 100%;
+    }
+}
+
+.grey {
+    color: $grey-text;
+}
+
+.orange {
+    color: $orange;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    border-top: $grey-bg solid 1px;
+    .button {
+        flex: 0 0 50%;
+        text-align: center;
+        font-size: .32rem;
+        line-height: 1rem;
+    }
+    .primary-button {
+        color: #FFFFFF;
+        background: $orange;
+    }
+}
+
+.iphone-x-bottom {
+    padding-bottom: 30px;
+}

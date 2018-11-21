@@ -1,0 +1,260 @@
+body,
+div,
+span,
+header,
+footer,
+nav,
+section,
+aside,
+article,
+ul,
+ol,
+dl,
+dt,
+dd,
+li,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+i,
+b,
+textarea,
+button,
+input,
+select,
+label,
+figure,
+figcaption {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-style: normal;
+    text-decoration: none;
+    border: none;
+    //  color: #333333;
+    font-size: .28rem;
+    font-weight: normal;
+    font-family: "PingFang SC", 'Helvetica Neue', Tahoma, Arial, 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    outline: none;
+    resize: none;
+}
+
+a {
+    color: inherit;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+button {
+    background: none;
+}
+
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background-color: #F5F5F5;
+}
+
+
+/*定义滚动条轨道 内阴影+圆角*/
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+
+/*定义滑块 内阴影+圆角*/
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #555;
+}
+
+input::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #aaa;
+}
+
+input:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #aaa;
+}
+
+input::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #aaa;
+}
+
+input:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #aaa;
+}
+
+input[type=search]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+
+input,
+textarea {
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    background: inherit;
+}
+
+img {
+    width: auto;
+    max-width: 100%;
+    vertical-align: middle;
+    -webkit-transform: translate3d(0, 0, 0)
+}
+
+em,
+i {
+    font-weight: normal;
+    color: inherit;
+    font-style: normal;
+}
+
+del {
+    color: #cdcdcd;
+}
+
+mark {
+    background: none;
+    text-decoration: line-through;
+    color: #AAAAAA;
+    font-size: .24rem;
+}
+
+.white-bg {
+    min-height: 100vh;
+    background: #FFFFFF;
+}
+
+.white-rect {
+    background: #FFFFFF;
+    padding-top: .1rem;
+    padding-bottom: .1rem;
+}
+
+.padding-l {
+    padding-left: .3rem;
+}
+
+.margin-l {
+    margin-left: .3rem;
+}
+
+.back_img {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.margin {
+    margin: 0 auto;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.none {
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.flexbe:after {
+    content: "";
+    flex-grow: 1
+}
+
+@keyframes backOpacity {
+    0% {
+        opacity: 1
+    }
+    25% {
+        opacity: .5
+    }
+    50% {
+        opacity: 1
+    }
+    75% {
+        opacity: .5
+    }
+    100% {
+        opacity: 1
+    }
+}
+
+.animation_opactiy {
+    animation: backOpacity 2s ease-in-out infinite;
+}
+
+.container {
+    width: 100%;
+    padding: .2rem .2rem;
+}
+
+.mt0 {
+    margin-top: 0;
+}
+
+.mt20 {
+    margin-top: .2rem;
+}
+
+.mb10 {
+    margin-bottom: .1rem;
+}
+
+.mb20 {
+    margin-bottom: .2rem;
+}
+
+.mb0 {
+    margin-bottom: 0;
+}
+
+.pr0 {
+    padding-right: 0;
+}
+
+.no-min {
+    min-height: initial !important;
+}
+
+body.modal-open {
+    position: fixed;
+    width: 100%;
+}

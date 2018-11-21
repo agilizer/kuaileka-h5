@@ -1,0 +1,91 @@
+.pay-view {
+    .title {
+        text-align: center;
+        width: 6.9rem;
+        line-height: .8rem;
+        margin: 0 auto;
+        border-bottom: .01rem solid $grey-bg;
+    }
+    .coupon-list .coupon-item {
+        margin-bottom: 0;
+        margin-top: .2rem;
+    }
+    .tip {
+        line-height: .6rem;
+        color: #999;
+        text-align: center;
+    }
+    .coupon-checked {
+        display: block;
+        width: 6.9rem;
+        padding: 0 .3rem;
+        margin: 0 auto;
+        height: .7rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: .01rem solid $grey-bg;
+    }
+    .pay-detail {
+        width: 6.9rem;
+        margin: 0 auto;
+        padding: .2rem .3rem;
+        p,
+        label {
+            display: flex;
+            justify-content: space-between;
+            height: .6rem;
+            align-items: center;
+        }
+    }
+}
+
+.recharge {
+    padding: .2rem .3rem;
+    h2 {
+        line-height: .8rem;
+    }
+    .recharge-box {
+        display: flex;
+        justify-content: space-between;
+    }
+    .recharge-item {
+        border: .01rem solid $orange;
+        width: 2rem;
+        height: 1.6rem;
+        padding: 0 .1rem;
+        text-align: center;
+        background-color: $grey-bg;
+        dt {
+            line-height: 1rem;
+            font-size: .5rem;
+            border-bottom: .02rem solid #e4e4e4;
+        }
+        dd {
+            color: $orange;
+            line-height: .6rem;
+        }
+    }
+    .recharge-user {
+        margin-top: .3rem;
+        input {
+            width: 100%;
+            height: .8rem;
+            background: $grey-bg;
+            padding: 0 .32rem;
+        }
+    }
+    .button {
+        margin-top: .8rem;
+        width: 100%;
+        line-height: .8rem;
+        text-align: center;
+        color: #FFFFFF;
+        background: $orange;
+        font-size: .32rem;
+        &.disabled {
+            pointer-events: none;
+            background: $grey-text;
+        }
+    }
+}
