@@ -118,18 +118,18 @@ if(process.env.NODE_ENV === 'production') {
   entryFiles = glob.sync(PAGE_PATH + '/*/*.js')
 } else {
   //需要测试哪些页面，在数组中添加哪些页面
-  //entryFiles = glob.sync(PAGE_PATH + '/*/*.js')
+  //entryFiles = glob.sync(PAGE_PATH + '/*/*.js')//全部页面
   entryFiles = [
     PAGE_PATH + '/index/index.js',
     PAGE_PATH + '/index/home.js',
-//  PAGE_PATH + '/address/address.js',
-//  PAGE_PATH + '/user/user.js',
-//  PAGE_PATH + '/user/userOrder.js',
-//  PAGE_PATH + '/user/balance.js',
-//  PAGE_PATH + '/user/accountDetails.js',
-//  PAGE_PATH + '/user/coupon.js',
-//  PAGE_PATH + '/message/message.js',
-//  PAGE_PATH + '/pay/recharge.js',
+    PAGE_PATH + '/address/address.js',
+    PAGE_PATH + '/user/user.js',
+    PAGE_PATH + '/user/userOrder.js',
+    PAGE_PATH + '/user/balance.js',
+    PAGE_PATH + '/user/accountDetails.js',
+    PAGE_PATH + '/user/coupon.js',
+    PAGE_PATH + '/message/message.js',
+    PAGE_PATH + '/pay/recharge.js',
   ]
 }
 exports.entries = function() {

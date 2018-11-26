@@ -25,6 +25,9 @@
         <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
       </div>
     </div>
+    <div class="goto-buy" @click="showPayView">
+      <span>去这里</span>
+    </div>
     <div class="button-buy" @click="showPayView">
       <span>购买</span>
       <i v-if="totalCount">{{totalCount}}</i>

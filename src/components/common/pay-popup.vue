@@ -48,8 +48,10 @@
   import api from '../../service/api'
   let homeViewHeight = db.get('homeViewHeight')
   let tabbarHeight = db.get('tabbarHeight')
+  import login from '../../views/index/mixin/login'
   export default {
     name: 'pay-view',
+    mixins: [login],
     components: {
       Swiper,
       SwiperItem,
@@ -72,9 +74,7 @@
         couponValue: [],
       }
     },
-    created() {
-      this.getCouponList();
-    },
+    created() {},
     computed: {
       //总价
       totalAmount() {
@@ -99,6 +99,13 @@
       }
     },
     methods: {
+      async initCoupon() {
+        //判断是否登录
+        if(!db.get('userInfo')) {
+          await this.wecatLogin();
+        }
+        this.getCouponList();
+      },
       couponChange() {
         //console.log(this.couponValue)
         if(this.couponValue.length == 0) return;
@@ -118,10 +125,23 @@
           tip: false
         })
         if(res.success == true) {
-          this.couponList = res.result
+          this.couponList = res.result;
         }
       },
       async pay() {
+        const _this = this;
+        if(!db.get('userInfo')) {
+          this.$vux.alert.show({
+            title: '提醒',
+            content: '请登录',
+            onShow() {},
+            async onHide() {
+              await _this.wecatLogin();
+              await _this.getCouponList();
+            }
+          })
+          return;
+        }
         let res, productCode = [],
           count = [];
         //产品code
@@ -244,6 +264,7 @@
       value(val) {
         this.popupShow = val;
         if(val) {
+          this.initCoupon();
           ModalHelper.afterOpen();
         } else {
           ModalHelper.beforeClose();

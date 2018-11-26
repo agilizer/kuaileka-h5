@@ -10,11 +10,12 @@
 
 <script>
   import { Tabbar, TabbarItem } from 'vux'
-  import envUrl from '../../config/env'
   import db from '../../plugins/db'
   import api from '../../service/api'
+  import login from './mixin/login'
   export default {
     name: 'index',
+    mixins: [login],
     components: {
       Tabbar,
       TabbarItem,
@@ -55,7 +56,6 @@
       }
     },
     created() {
-
       //    this.$http.post(this, api.addMember, {
       //      fromOpenid: '',
       //      appid: api.appid,
@@ -69,7 +69,6 @@
       //    }).then(data => {
       //      console.log(data)
       //    })
-
       //显示加载中...
       this.$vux.loading.show({
         text: 'Loading'
@@ -77,12 +76,10 @@
       if(window.plus) {
         //console.log('window')
         this.init();
-        this.wecatLogin();
       } else {
         document.addEventListener("plusready", () => {
           //console.log('plusready')
           this.init();
-          this.wecatLogin();
         }, false);
       }
       //    this.$http.post(this,api.shareCoupon, {
@@ -97,7 +94,7 @@
         let outTime = 0;
         let u = navigator.userAgent;
         let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-        if(isiOS && screen.height == 812 && screen.width == 375) this.isIphoneX = true; //适配iphoneX下方的菜单 
+        if(isIOS && screen.height == 812 && screen.width == 375) this.isIphoneX = true; //适配iphoneX下方的菜单 
         if(!isIOS) outTime = 500; //延迟加载webview,iOS系统500ms延迟，andoriod不用
         //经纬度定位
         plus.geolocation.getCurrentPosition(p => {
@@ -120,55 +117,10 @@
           provider: 'baidu',
           coordsType: 'bd09ll'
         });
-
         //竖屏
         plus.screen.lockOrientation("portrait-primary");
       },
-      //微信登录
-      wecatLogin() {
-        const _this = this;
-        plus.oauth.getServices(function(services) {
-          _this.auths = services;
-          let s = _this.auths[0];
-          if(!s.authResult) {
-            s.login(function(e) {
-              //("登录认证成功！");
-              s.getUserInfo(function(e) {
-                _this.userInfo = s.userInfo;
-                _this.addMember();
-                db.set('userInfo', s.userInfo)
-              }, function(e) {
-                //("获取用户信息失败：" + e.message + " - " + e.code);
-              });
-            }, function(e) {
-              //("登录认证失败！");
-            });
-          } else {
-            ///("已经登录认证！");
-            _this.userInfo = s.userInfo;
-            db.set('userInfo', s.userInfo)
-            //console.log(JSON.stringify(s.userInfo))
-          }
-        }, function(e) {
-          //("获取分享服务列表失败：" + e.message + " - " + e.code);
-        });
-      },
-      //注册用户到数据库
-      async addMember() {
-        let res = await this.$http.post(this, api.addMember, {
-          fromOpenid: '',
-          appid: api.appid,
-          openid: this.userInfo.openid,
-          nickName: this.userInfo.nickname,
-          avatarUrl: this.userInfo.headimgurl,
-          gender: this.userInfo.sex,
-          province: this.userInfo.province,
-          city: this.userInfo.city,
-          country: this.userInfo.country
-        })
-        //      console.log(JSON.stringify(res))
-        //      alert(JSON.stringify(res))
-      },
+
       //创建webview
       createWebview(tabbarItem) {
         //初始加载工作台webview
@@ -203,8 +155,13 @@
         return tabbarHeight;
       },
       //底部tabbar切换
-      tabbarItemClick(index) {
-        if(!window.plus) return;
+      async tabbarItemClick(index) {
+        if(!window.plus) return; //判断是不是移动设备环境
+        //判断是否登录
+        if(!db.get('userInfo')) {
+          await this.wecatLogin();
+        }
+        //webview没有要创建
         if(!this.tabbarItems[index].webview) {
           this.tabbarItems[index].webview = this.createWebview(this.tabbarItems[index]);
         }

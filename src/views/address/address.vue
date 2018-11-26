@@ -1,8 +1,5 @@
 <template>
   <div class="address">
-    <!--<div class="address-list">
-
-    </div>-->
     <me-scroll :style="{'height':scrollerHeight}" class="address-list message-scroller" @up="meUp" @down="meDown" @init="meInit">
       <div class="item" v-for="(i,index) in list" :key="i.id" @click="selectAddress(i)">
         <div class="img">
@@ -25,6 +22,9 @@
         </div>
       </div>
     </me-scroll>
+    <div class="scan-enter">
+    	<img src="../../assets/images/scan.png" />
+    </div>
   </div>
 </template>
 
@@ -42,7 +42,7 @@
         mescroll: null,
         scrollerHeight: '100vh',
         page: 1,
-        size: 100,
+        size: 10,
         list: [],
         local: {
           latitude: '39.95896', //纬度
