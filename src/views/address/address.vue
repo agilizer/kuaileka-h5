@@ -22,8 +22,8 @@
         </div>
       </div>
     </me-scroll>
-    <div class="scan-enter">
-    	<img src="../../assets/images/scan.png" />
+    <div class="scan-enter" v-if="isiOS">
+      <img src="../../assets/images/scan.png" />
     </div>
   </div>
 </template>
@@ -47,10 +47,13 @@
         local: {
           latitude: '39.95896', //纬度
           longitude: '116.48301', //经度
-        }
+        },
+        isiOS: false,
       }
     },
     created() {
+      const u = navigator.userAgent;
+      this.isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       //    this.local = db.get('local').coords;
       if(window.plus) {} else {
         document.addEventListener("plusready", () => {}, false);
@@ -118,7 +121,7 @@
   }
 </script>
 <style>
-  .address .item .intro {
+  .address .address-list .item .intro {
     background-image: url(../../assets/images/im_cardbg.png);
   }
 </style>

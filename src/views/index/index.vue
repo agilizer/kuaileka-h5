@@ -91,15 +91,16 @@
     },
     methods: {
       init() {
+        //顶部状态栏背景和主题
         plus.navigator.setStatusBarBackground('#404040');
-        let outTime = 0;
+        plus.navigator.setStatusBarStyle('light');
         let u = navigator.userAgent;
-        let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-        if(isIOS && screen.height == 812 && screen.width == 375) this.isIphoneX = true; //适配iphoneX下方的菜单 
-        if(!isIOS) outTime = 500; //延迟加载webview,iOS系统500ms延迟，andoriod不用
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        if(isiOS && screen.height == 812 && screen.width == 375) this.isIphoneX = true;
+        let outTime = 0;
+        if(!isiOS) outTime = 500; //延迟加载webview,iOS系统500ms延迟，andoriod不用
         //经纬度定位
         plus.geolocation.getCurrentPosition(p => {
-          console.log(JSON.stringify(p))
           //        this.latitude = p.coords.latitude; //维度
           //        this.longitude = p.coords.longitude; //经度
           //        this.altitude = p.coords.altitude //海拔
@@ -151,8 +152,12 @@
         return document.documentElement.clientHeight - tabbarHeight;
       },
       fixBottom() {
-        let tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight
-        if(this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
+        let tabbarHeight = 0;
+        const u = navigator.userAgent;
+        if(u.indexOf('Android') > -1 || u.indexOf('Adr') > -1) {
+          tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight
+          if(this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
+        }
         return tabbarHeight;
       },
       //底部tabbar切换

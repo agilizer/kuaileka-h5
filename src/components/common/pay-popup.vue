@@ -51,7 +51,7 @@
   import login from '../../views/index/mixin/login'
   export default {
     name: 'pay-view',
-    mixins: [login],
+//  mixins: [login],
     components: {
       Swiper,
       SwiperItem,
@@ -100,10 +100,6 @@
     },
     methods: {
       async initCoupon() {
-        //判断是否登录
-        if(!db.get('userInfo')) {
-          await this.wecatLogin();
-        }
         this.getCouponList();
       },
       couponChange() {

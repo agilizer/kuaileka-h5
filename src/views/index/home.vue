@@ -25,7 +25,7 @@
         <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
       </div>
     </div>
-    <div class="goto-buy" @click="showPayView">
+    <div class="goto-buy" v-if="isiOS" @click="showPayView">
       <span>去这里</span>
     </div>
     <div class="button-buy" @click="showPayView">
@@ -43,8 +43,10 @@
   import db from '../../plugins/db'
   let clientHeight = db.get('clientHeight')
   import api from '../../service/api'
+  import login from '../../views/index/mixin/login'
   export default {
     name: 'home',
+    mixins: [login],
     components: {
       Swiper,
       SwiperItem,
@@ -70,9 +72,12 @@
         orderList: [],
         totalCount: 0,
         payPopupShow: false,
+        isiOS: false,
       }
     },
     created() {
+      const u = navigator.userAgent;
+      this.isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       //监听咖啡机地址变化
       document.addressChange = (res) => {
         this.address = res;
@@ -198,7 +203,7 @@
           }
         })
       },
-      showPayView() {
+      async showPayView() {
         if(this.orderList.length == 0) {
           this.$vux.toast.text('请选择商品')
           return;
@@ -209,6 +214,10 @@
           //          height: clientHeight + 'px',
           //          bottom: '0'
           //        })
+        }
+        //判断是否登录
+        if(!db.get('userInfo')) {
+          await this.wecatLogin();
         }
         this.payPopupShow = true;
       },

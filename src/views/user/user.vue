@@ -23,9 +23,8 @@
       <div class="ads">
         <img src="../../assets/images/im_fenxiang0.png" />
       </div>
-      <!--<div class="" @click="wecatLogin" style="text-align: center;line-height: 1rem;">
-        登录
-      </div>-->
+      <!--<div class="" @click="wecatLogin" style="text-align: center;line-height: 1rem;">登录</div>-->
+      <!--<div style="line-height: 50px;text-align: center;" @click="share">测试分享</div>-->
     </div>
   </div>
 </template>
@@ -93,6 +92,46 @@
           });
           plus.webview.show(item.webview, 'slide-in-right');
         }
+      },
+      share() {
+//      if(window.plus) {
+//        let shares, sharewx;
+//        plus.share.getServices(function(s) {
+//          shares = s;
+//          for(var i in s) {
+//            console.log(s[i].id)
+//            if('weixin' == s[i].id) {
+//              sharewx = s[i];
+//              sharewx.send({
+//                type: 'miniProgram',
+//                title: '分享小程序标题',
+//                content: '分享小程序描述内容。',
+//                thumbs: ['_www/mp.png'],
+//                id: 'wx633b83ee07bd395a'
+//              }, function() {
+//                alert("分享成功！");
+//              }, function(e) {
+//                alert("分享失败：" + e.message);
+//              });
+//            }
+//          }
+//        }, function(e) {
+//          alert("获取分享服务列表失败：" + e.message);
+//        });
+//      }
+        //      "web"-分享网页类型，title（必填）、content（必填）、thumbs（必填）、href（网页url，必填）属性值有效；
+        //      "text"-分享文字类型，content（必填）属性值有效； "image"-分享图片类型，pictures（必填）属性值有效； 
+        //      "music"-分享音乐类型，title（必填）、content（必填）、thumbs（必填）、media（音乐url，必填）属性值有效；
+        //      "video"-分享视频类型，title（必填）、content（必填）、thumbs（必填）、media（视频url，必填）属性值有效； 
+        //      "miniProgram"-分享小程序类型（仅支持分享到好友），title（必填）、content（必填）、thumbs（图片小于128K，宽高比为5:4，必填）、miniProgram（小程序参数，必填）属性值有效； 
+        //      没有设置type时，如果href值有效则默认值为"web"，如果pictures有效则默认值为"image"，否则默认值为"text"。
+        //      新浪微博分享平台，可取值： "web"-分享网页类型，content、href（网页url，必填），分享链接添加到内容之后；
+        //      "text"-分享文字类型，content（必填）属性有效，可在内容中直接插入链接地址；
+        //      "image"-分享图片类型，content（可选）、thumbs（可选）、pictures（必填）属性有效；
+        //      "video"-分享视频类型，content（可选）、thumbs（可选）、media（本地视频文件，必填）属性有效； 没有设置type时，如果存在thumbs则默认值为"image"，如果存在href则默认值为"web"，否则默认为"text"。
+        //      QQ分享平台，可取值： "text"-分享文字类型，href（iOS可选，Android必填）、title（必填，最长30个字符）、content（可选，最长40个字符）、pictures或thumbs（可选，优先pictures，iOS不支持）属性有效；
+        //		"image"-分享图片类型，pictures或thumbs（必填，优先pictures）属性有效；
+        //      "music"-分享音乐类型，title（必填，最长30个字符）、content（可选，最长40个字符）、href（必填）、media（音乐url，必填）、pictures或thumbs（可选，优先pictures）属性值有效； 没有设置type时，默认值"text"。
       },
     }
   }
