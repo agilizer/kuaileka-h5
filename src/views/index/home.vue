@@ -73,6 +73,7 @@
       }
     },
     created() {
+      //监听咖啡机地址变化
       document.addressChange = (res) => {
         this.address = res;
       }
@@ -156,7 +157,7 @@
               'titleSize': '18',
               autoBackButton: true,
               progress: {
-                color: '#ffb64c'
+                color: '#f7be36'
               }
             }
           });

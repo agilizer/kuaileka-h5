@@ -2,8 +2,6 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import db from '../plugins/db'
-import envUrl from '../config/env'
 
 let baseURL;
 if(process.env.NODE_ENV == 'production') {

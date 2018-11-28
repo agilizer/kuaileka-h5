@@ -91,6 +91,7 @@
     },
     methods: {
       init() {
+        plus.navigator.setStatusBarBackground('#404040');
         let outTime = 0;
         let u = navigator.userAgent;
         let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
@@ -134,7 +135,7 @@
             buttons: tabbarItem.buttons,
             autoBackButton: false,
             progress: {
-              color: '#ffb64c'
+              color: '#f7be36'
             }
           },
           bounce: 'vertical',

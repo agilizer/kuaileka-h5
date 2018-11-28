@@ -87,7 +87,7 @@
               },
               autoBackButton: true,
               progress: {
-                color: '#ffb64c'
+                color: '#f7be36'
               }
             }
           });
