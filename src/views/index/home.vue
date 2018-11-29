@@ -32,7 +32,7 @@
       <span>购买</span>
       <i v-if="totalCount">{{totalCount}}</i>
     </div>
-    <pay-popup v-model="payPopupShow" :orderList=orderList></pay-popup>
+    <pay-popup v-model="payPopupShow" :orderList=orderList :couponList=couponList></pay-popup>
   </div>
 </template>
 
@@ -73,6 +73,7 @@
         totalCount: 0,
         payPopupShow: false,
         isiOS: false,
+        couponList: [], //优惠券列表
       }
     },
     created() {
@@ -215,13 +216,34 @@
           //          bottom: '0'
           //        })
         }
+
         //判断是否登录
         if(!db.get('userInfo')) {
-          await this.wecatLogin();
+          this.$vux.loading.show({
+            text: '登录中...'
+          })
+          let loginRes = await this.wecatLogin();
+          this.$vux.loading.hide()
+          if(loginRes == 201) return;
         }
-        this.payPopupShow = true;
+        this.$vux.loading.show({
+          text: '加载中...'
+        })
+        //获取用户优惠券
+        let res = await this.$http.get(this, api.couponList, {
+          openid: db.get('userInfo').openid,
+          appid: api.appid,
+          effective: true,
+          tip: false
+        })
+        this.$vux.loading.hide()
+        if(res.success == true) {
+          this.couponList = res.result;
+          this.payPopupShow = true;
+        } else {
+          this.$vux.toast.text('系统错误，请稍候重试')
+        }
       },
-
     },
     watch: {
       async 'address.machineCode' (value) {

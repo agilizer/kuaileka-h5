@@ -1,47 +1,13 @@
 <template>
   <!--订单列表-->
   <div class="user-order">
-    <div class="tab-menu-container">
+    <div class="tab-menu-container" ref="tabMenu">
       <ul class="tab-menu">
         <li v-for="(i,index) in orderMenu" :class="{active:tabIndex==index}" @click="tabClick(index)">{{i.value}}</li>
       </ul>
     </div>
-    <ul class="order-list">
-      <!--<li>
-        <div class="info">
-          <p><span>咖啡机名</span><span>百汇园3号</span></p>
-          <p><span>订单商品</span><span>plim juice ×3</span></p>
-          <p><span>订单金额</span><span>￥9.8</span></p>
-          <p><span>购买日期</span><span>2018-11-20 15:11:12</span></p>
-          <p><span>支付方式</span><span>余额</span></p>
-        </div>
-        <div class="operation">
-          <div class="num">
-            <span>订单号：</span>
-            <em>FDSGDFJDF664353423</em>
-          </div>
-          <div class="button">制作</div>
-        </div>
-      </li>
-      <li>
-        <div class="info">
-          <p><span>咖啡机名</span><span>百汇园3号</span></p>
-          <p><span>订单商品</span><span>plim juice ×3</span></p>
-          <p><span>订单金额</span><span>￥9.8</span></p>
-          <p><span>购买日期</span><span>2018-11-20 15:11:12</span></p>
-          <p><span>支付方式</span><span>余额</span></p>
-        </div>
-        <div class="operation">
-          <div class="num">
-            <span>订单号：</span>
-            <em>FDSGDFJDF664353423</em>
-          </div>
-          <div class="button diabled">已完成</div>
-        </div>
-      </li>-->
-    </ul>
     <me-scroll :style="{'height':scrollerHeight}" class="order-list" @up="meUp" @down="meDown" @init="meInit">
-      <li v-for="i in list">
+      <li v-for="i in list" v-if="list.length>0">
         <div class="info">
           <p><span>咖啡机名</span><span>{{i.machine}}</span></p>
           <p><span>订单商品</span><span>{{i.productNames}}</span></p>
@@ -59,16 +25,17 @@
             <span>订单号：</span>
             <em>{{i.chargeId}}</em>
           </div>
-          <div class="button" :class="">制作</div>
+          <div class="button" :class="{disabled:i.status!='PAY'}" @click="makeProduct(i.chargeId)">
+            <template v-if="i.status=='PAY'">制作</template>
+            <template v-if="i.status!='PAY'">已完成</template>
+          </div>
         </div>
       </li>
+      <div class="no-data-img" v-if="noData">
+        <img src="../../assets/images/im_qsdd.png" style="width: 3.5rem;height: 2.5rem;" />
+        <p>暂无订单</p>
+      </div>
     </me-scroll>
-
-    <div class="no-order">
-      <img src="../../assets/images/im_qsdd.png" style="width: 3.5rem;height: 2.5rem;" />
-      <p>暂无订单</p>
-    </div>
-
   </div>
 </template>
 
@@ -77,7 +44,7 @@
   import db from '../../plugins/db'
   import MeScroll from '../../components/common/me-scroll.vue'
   export default {
-    name: 'home',
+    name: 'user-order-list',
     components: {
       MeScroll
     },
@@ -95,13 +62,20 @@
         size: 100,
         isCompleted: false,
         list: [],
+        noData: false,
       }
     },
     created() {
-
+      //确定mescroll的高度
+      setTimeout(() => {
+        let rem = document.documentElement.style.fontSize.replace('px', ''),
+          height = document.body.clientHeight;
+        this.scrollerHeight = parseInt(height - .8 * rem) + 'px';
+      }, 500)
     },
     methods: {
       tabClick(index) {
+        this.noData = false;
         this.tabIndex = index;
         this.isCompleted = index == 1;
         this.list = [];
@@ -142,6 +116,7 @@
           nextPage = false;
         }
         this.list = this.list.concat(data);
+        this.noData = this.list.length == 0;
         this.mescroll.endSuccess(data.length, nextPage);
         this.mescroll.endErr();
       },
@@ -156,9 +131,24 @@
           nextPage = false;
         }
         this.list = this.list.concat(data);
+        this.noData = this.list.length == 0;
         this.mescroll.endSuccess(data.length, nextPage);
         this.mescroll.endErr();
       },
+      makeProduct(id) {
+        if(window.plus) {
+          let w = plus.nativeUI.showWaiting("制作中...");
+        }
+        this.$http.post(this, api.makeProduct, {
+          chargeId: id
+        }).then(data => {
+          if(data.success) {
+            this.list = [];
+            this.mescroll.resetUpScroll();
+            if(window.plus) w.close();
+          }
+        })
+      }
     }
   }
 </script>

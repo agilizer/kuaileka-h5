@@ -17,18 +17,19 @@ const mixin = {
                   _this.userInfo = s.userInfo;
                   _this.addMember();
                   db.set('userInfo', s.userInfo);
-                  resolve();
+                  resolve(200);
                 }, function(e) {
                   //("获取用户信息失败：" + e.message + " - " + e.code);
                 });
               }, function(e) {
                 //("登录认证失败！");
+                resolve(201);
               });
             } else {
               ///("已经登录认证！");
               _this.userInfo = s.userInfo;
               db.set('userInfo', s.userInfo);
-              resolve();
+              resolve(200);
               //console.log(JSON.stringify(s.userInfo))
             }
           },

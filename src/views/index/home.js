@@ -15,7 +15,8 @@ FastClick.attach(document.body);
 //axios请求引入
 Vue.use(axiosRequest)
 /* eslint-disable no-new */
-import { ToastPlugin,AlertPlugin } from 'vux'
+import { ToastPlugin, AlertPlugin, LoadingPlugin } from 'vux'
+Vue.use(LoadingPlugin)
 Vue.use(ToastPlugin)
 Vue.use(AlertPlugin)
 

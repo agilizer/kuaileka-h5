@@ -1,5 +1,8 @@
 export default {
-  appid: 'wx633b83ee07bd395a',
+  appid: 'wx633b83ee07bd395a', //小程序appid
+  originID: 'gh_09604479aeb7', //小程序原始id
+  applacationID: 'wxd3396cbba3418fdc', //微信第三方登录的appid
+  applacationSecret: '77cb99013cbc32a56ac38521020c0d76', //微信第三方登录的appsecret
   existMember: '/program/existMember ', //查询用户登录状态及昵称
   addMember: '/program/addMember', //用户注册
   shareCoupon: '/program/shareCoupon', //用户获得优惠券，进入首页，弹框通知

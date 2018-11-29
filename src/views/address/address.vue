@@ -6,6 +6,7 @@
           <img src="../../assets/images/im_cardbg2.png" />
         </div>
         <div class="intro">
+          <img class="bg-img" src="../../assets/images/im_cardbg.png" />
           <h2 class="ellipsis">{{i.name}}</h2>
           <p class="ellipsis">{{i.location}}</p>
           <p>{{i.distance}}{{i.unit}}</p>
@@ -121,7 +122,4 @@
   }
 </script>
 <style>
-  .address .address-list .item .intro {
-    background-image: url(../../assets/images/im_cardbg.png);
-  }
 </style>

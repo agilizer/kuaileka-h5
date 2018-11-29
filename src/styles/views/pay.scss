@@ -15,6 +15,14 @@
         color: #999;
         text-align: center;
     }
+    .no-coupon {
+        padding-top: .2rem;
+        text-align: center;
+        img{
+            width: 6.4rem;
+            height: 3rem;
+        }
+    }
     .coupon-checked {
         display: block;
         width: 6.9rem;

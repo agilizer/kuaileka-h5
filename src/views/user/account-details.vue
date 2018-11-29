@@ -1,18 +1,17 @@
 <template>
   <!--帐号明细-->
   <div class="account-detail">
-    <h2>账户明细</h2>
     <me-scroll :style="{'height':scrollerHeight}" class="" @up="meUp" @down="meDown" @init="meInit">
+      <h2 v-if="!noData">账户明细</h2>
       <li v-for="i in list">
         <span>充值</span>
         <i>88咖豆</i>
         <span>2018-01-22 18:00</span>
       </li>
-      <li>
-        <span>充值</span>
-        <i class="grey">-88咖豆</i>
-        <span>2018-01-22 18:00</span>
-      </li>
+      <div class="no-data-img" v-if="noData">
+        <img src="../../assets/images/im_qsdd.png" style="width: 3.5rem;height: 2.5rem;" />
+        <p>暂无账户明细</p>
+      </div>
     </me-scroll>
   </div>
 </template>
@@ -32,12 +31,13 @@
         page: 1,
         size: 10,
         scrollerHeight: '100vh',
+        noData: false,
       }
     },
     created() {},
     methods: {
       dataGet() {
-        return this.$http.get(this, api.consumeList,{
+        return this.$http.get(this, api.consumeList, {
           openid: db.get('userInfo').openid,
           pageSize: this.size,
           pageNo: this.page
@@ -64,40 +64,29 @@
       async fetchMore(page) {
         this.page = page.num;
         let data = await this.dataGet();
-        if(data && data.code === 0) {
-          if(page.num == 1) this.list = [];
-          let nextPage = true;
-          if(data.body.content.length < this.size) {
-            nextPage = false;
-          }
-          this.list = this.list.concat(data.body.content);
-          this.mescroll.endSuccess(data.body.content.length, nextPage);
-        } else {
-          this.$vux.toast.text('系统错误，请刷新重试！');
-          this.mescroll.endErr();
+        if(page.num == 1) this.list = [];
+        let nextPage = true;
+        if(data.length < this.size) {
+          nextPage = false;
         }
+        this.list = this.list.concat(data);
+        this.noData = this.list.length == 0;
+        this.mescroll.endSuccess(data.length, nextPage);
         this.mescroll.endErr();
       },
       //列表刷新
       async refreshFecth() {
-        this.mescroll.setPageNum(2);
-        this.page = 0;
+        this.mescroll.setPageNum(1);
+        this.page = 1;
         const data = await this.dataGet();
-        data.body.content.forEach(x => {
-          if(!x.endDate) x.endDate = ''
-        });
-        if(data && data.code === 0) {
-          this.taskList = [];
-          let nextPage = true;
-          if(data.body.content.length < this.size) {
-            nextPage = false;
-          }
-          this.taskList = this.taskList.concat(data.body.content);
-          this.mescroll.endSuccess(data.body.content.length, nextPage);
-        } else {
-          this.$vux.toast.text('系统错误，请刷新重试！');
-          this.mescroll.endErr();
+        this.list = [];
+        let nextPage = true;
+        if(data.length < this.size) {
+          nextPage = false;
         }
+        this.list = this.list.concat(data);
+        this.noData = this.list.length == 0;
+        this.mescroll.endSuccess(data.length, nextPage);
         this.mescroll.endErr();
       },
     }

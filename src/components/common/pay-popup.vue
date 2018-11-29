@@ -1,29 +1,35 @@
 <template>
   <popup class="pay-view" position='bottom' v-model="popupShow" @on-hide="hidePopup">
     <h2 class="title">支付</h2>
-    <swiper v-if="couponList.length>0" height="3.9rem" class="coupon-list" :show-dots="false">
-      <swiper-item v-for="(item, index) in couponList" :key="index">
-        <label>
-        <div class="coupon-item">
-          <h2>{{item.typeName}}</h2>
-          <div class="price">
-            <template v-if="item.type=='DISCOUNT'">
-              <i>￥</i>
-              <span>{{item.discount}}</span>
-            </template>
-            <img v-else="" src="../../assets/images/coffee-cup.png" style="width:1.65rem;" />
-          </div>
-          <div class="info">
-            <p>截止日期：{{item.endTime}}</p>
-            <p>来源：{{item.desc}}</p>
-          </div>
-        </div>
-        <div class="coupon-checked">
-        	<span>使用本优惠券</span>
-        	<input type="checkbox" :value="item" v-model="couponValue" @change="couponChange"/>
-       	</div>
-        </label>
+    <swiper height="3.9rem" class="coupon-list" :show-dots="false">
+      <swiper-item class="no-coupon" v-if="couponList.length==0">
+        <img src="../../assets/images/im_zwyhq.png" />
+        <p class="tip">暂无优惠券</p>
       </swiper-item>
+      <template v-if="couponList.length>0">
+        <swiper-item v-for="(item, index) in couponList" :key="index">
+          <label>
+	        <div class="coupon-item">
+	          <h2>{{item.typeName}}</h2>
+	          <div class="price">
+	            <template v-if="item.type=='DISCOUNT'">
+	              <i>￥</i>
+	              <span>{{item.discount}}</span>
+	            </template>
+	            <img v-else="" src="../../assets/images/coffee-cup.png" style="width:1.65rem;" />
+	          </div>
+	          <div class="info">
+	            <p>截止日期：{{item.endTime}}</p>
+	            <p>来源：{{item.desc}}</p>
+	          </div>
+	        </div>
+	        <div class="coupon-checked">
+	        	<span>使用本优惠券</span>
+	        	<input type="checkbox" class="input-checkbox" :value="item" v-model="couponValue" @change="couponChange"/>
+	       	</div>
+        </label>
+        </swiper-item>
+      </template>
     </swiper>
     <p class="tip" v-if="couponList.length>1">左右滑动，更换优惠券</p>
     <div class="pay-detail" v-if="orderList.length>0">
@@ -31,8 +37,8 @@
       <p><span class="grey">原价</span><span class="orange">￥{{totalAmount}}</span></p>
       <p v-if="couponList.length>0"><span class="grey">优惠券</span><span class="orange">￥{{couponSub}}</span></p>
       <p v-if="couponList.length>0"><span class="grey">优惠价</span><span class="orange">￥{{payValue}}</span></p>
-      <label><span>余额支付</span><input type="radio" value="balance" v-model="payWay"/></label>
-      <label><span>微信支付</span><input type="radio"  value="wecat" v-model="payWay"/></label>
+      <label><span>余额支付</span><input type="radio" class="input-radio" value="balance" v-model="payWay"/></label>
+      <label><span>微信支付</span><input type="radio" class="input-radio" value="wecat" v-model="payWay"/></label>
     </div>
     <div class="button-group">
       <div class="button default-button" @click="hidePopup">取消</div>
@@ -48,10 +54,8 @@
   import api from '../../service/api'
   let homeViewHeight = db.get('homeViewHeight')
   let tabbarHeight = db.get('tabbarHeight')
-  import login from '../../views/index/mixin/login'
   export default {
     name: 'pay-view',
-//  mixins: [login],
     components: {
       Swiper,
       SwiperItem,
@@ -63,12 +67,12 @@
         default: true,
         type: Boolean
       },
-      orderList: {}
+      orderList: {},
+      couponList: {}
     },
     data() {
       return {
         popupShow: this.value,
-        couponList: [],
         payWay: 'balance', //支付方式
         initAmount: 0,
         couponValue: [],
@@ -95,24 +99,19 @@
       },
       //结算价格
       payValue() {
-        return this.orderList[0].normalPrice - this.couponSub
+        return(this.orderList[0].normalPrice - this.couponSub).toFixed(2)
       }
     },
     methods: {
-      async initCoupon() {
-        this.getCouponList();
-      },
       couponChange() {
-        //console.log(this.couponValue)
         if(this.couponValue.length == 0) return;
         if(this.couponValue.length > 1) this.couponValue.shift();
-        if(this.couponValue[0].type == 'DISCOUNT') {
-          //        if(this.couponValue[0].discount > )
-        }
+        if(this.couponValue[0].type == 'DISCOUNT') {}
       },
       hidePopup() {
         this.$emit('input', false); //点击遮罩时传递false关闭
       },
+      //获取用户优惠券，修改策略为用户在首页点击购买按钮的时候获取
       async getCouponList() {
         let res = await this.$http.get(this, api.couponList, {
           openid: db.get('userInfo').openid,
@@ -124,20 +123,27 @@
           this.couponList = res.result;
         }
       },
+      gotoUserOrder(item) {
+        if(window.plus) {
+          item.webview = plus.webview.create('userOrder.html', 'userOrder', {
+            'popGesture': 'close',
+            'backButtonAutoControl': 'close',
+            'titleNView': {
+              'backgroundColor': '#404040',
+              'titleText': '我的订单',
+              'titleColor': '#FFFFFF',
+              'titleSize': '18',
+              autoBackButton: true,
+              progress: {
+                color: '#f7be36'
+              }
+            }
+          });
+          plus.webview.show(item.webview, 'slide-in-right');
+        }
+      },
       async pay() {
         const _this = this;
-        if(!db.get('userInfo')) {
-          this.$vux.alert.show({
-            title: '提醒',
-            content: '请登录',
-            onShow() {},
-            async onHide() {
-              await _this.wecatLogin();
-              await _this.getCouponList();
-            }
-          })
-          return;
-        }
         let res, productCode = [],
           count = [];
         //产品code
@@ -167,11 +173,14 @@
               rId: '', //扫码进入rId,
               success: res.success, //状态,
             })
-            if(payCompleteRes.success) this.$vux.toast.text('付款成功')
+            if(payCompleteRes.success) {
+              plus.nativeUI.alert("付款成功！", function() {
+                _this.gotoUserOrder
+              });
+            }
           } else {
             this.$vux.toast.text(res.message)
           }
-          console.log(JSON.stringify(res))
         } else {
           //微信支付
           res = await this.$http.post(this, api.preparePay, {
@@ -192,7 +201,7 @@
             channel = channels[1];
             plus.payment.request(channel, 's', function(result) {
               plus.nativeUI.alert("支付成功！", function() {
-                back();
+                _this.gotoUserOrder
               });
             }, function(error) {
               plus.nativeUI.alert("支付失败：" + error.code);
@@ -260,11 +269,9 @@
       value(val) {
         this.popupShow = val;
         if(val) {
-          this.initCoupon();
           ModalHelper.afterOpen();
         } else {
           ModalHelper.beforeClose();
-          //        this.getCouponList()
           //        if(window.plus) {
           //          let webView = plus.webview.getWebviewById('home')
           //          webView.setStyle({
@@ -286,8 +293,8 @@
   }
   
   .pay-view {
-    input[type=checkbox],
-    input[type=radio] {
+    .input-checkbox,
+    .input-radio {
       width: .42rem;
       height: .42rem;
       background: url(../../assets/images/ic_chose0.png) center / cover;
