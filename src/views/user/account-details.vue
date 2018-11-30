@@ -76,7 +76,7 @@
       },
       //列表刷新
       async refreshFecth() {
-        this.mescroll.setPageNum(1);
+        this.mescroll.setPageNum(2);
         this.page = 1;
         const data = await this.dataGet();
         this.list = [];

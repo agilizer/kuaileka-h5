@@ -244,13 +244,15 @@
 .fixed-bottom {
     height: .8rem;
     width: 100%;
+    &.iphone-x-height {
+        height: calc(.8rem + 30px);
+    }
     .button {
         position: fixed;
         left: 0;
         bottom: 0;
         width: 100%;
         line-height: .8rem;
-        height: .8rem;
         background: $orange;
         color: #FFFFFF;
         text-align: center;

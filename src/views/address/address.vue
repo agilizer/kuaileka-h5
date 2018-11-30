@@ -1,10 +1,8 @@
 <template>
   <div class="address">
-    <me-scroll :style="{'height':scrollerHeight}" class="address-list message-scroller" @up="meUp" @down="meDown"
-               @init="meInit">
+    <me-scroll class="address-list message-scroller" meid='body' @up="meUp" @down="meDown" @init="meInit">
       <div class="item" v-for="(i,index) in list" :key="i.id" @click="selectAddress(i)">
-        <div class="img"
-             :style="{background: 'url('+cafeimg+') top right no-repeat / contain, url('+cafebg+') top left no-repeat / contain'}">
+        <div class="img" :style="{background: 'url('+cafeimg+') top right no-repeat / contain, url('+cafebg+') top left no-repeat / contain'}">
         </div>
         <div class="intro">
           <h2 class="ellipsis">{{i.name}}</h2>
@@ -24,7 +22,7 @@
       </div>
     </me-scroll>
     <div class="scan-enter" v-if="isiOS">
-      <img src="../../assets/images/scan.png"/>
+      <img src="../../assets/images/scan.png" />
     </div>
   </div>
 </template>
@@ -58,7 +56,7 @@
     },
     created() {
       //    this.local = db.get('local').coords;
-      if (window.plus) {
+      if(window.plus) {
         this.isiOS = plus.os.name === 'iOS';
       } else {
         document.addEventListener("plusready", () => {
@@ -97,9 +95,9 @@
       async fetchMore(page) {
         this.page = page.num;
         let data = await this.dataGet();
-        if (page.num == 1) this.list = [];
+        if(page.num == 1) this.list = [];
         let nextPage = true;
-        if (data.length < this.size) {
+        if(data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);
@@ -108,12 +106,12 @@
       },
       //列表刷新
       async refreshFecth() {
-        this.mescroll.setPageNum(1);
+        this.mescroll.setPageNum(2); //设置page.num的值，下拉刷新之后第一页已经加载，第一次加载更多从第二页开始，所以设置为2
         this.page = 1;
         const data = await this.dataGet();
         this.list = [];
         let nextPage = true;
-        if (data.length < this.size) {
+        if(data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);

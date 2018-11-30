@@ -85,8 +85,8 @@
       </li>-->
 
     <!--<me-scroll :style="{'height':scrollerHeight}" class="coupon-list" @up="meUp" @down="meDown" @init="meInit"></me-scroll>-->
-    <div class="fixed-bottom" v-show="tabIndex==0">
-      <div class="button">去使用</div>
+    <div class="fixed-bottom" :class="{'iphone-x-height':isIphoneX}" v-show="tabIndex==0" @click="gotoIndex">
+      <div class="button" :class="{'iphone-x-bottom':isIphoneX}">去使用</div>
     </div>
   </div>
 </template>
@@ -95,8 +95,10 @@
   import MeScroll from '../../components/common/me-scroll.vue'
   import api from '../../service/api'
   import db from '../../plugins/db'
+  import iPhoneXSafearea from '../../plugins/mixins/iphoneX-safe-area'
   export default {
-    name: 'home',
+    name: '',
+    mixins: [iPhoneXSafearea],
     components: {
       MeScroll
     },
@@ -140,6 +142,11 @@
       tabClick(index) {
         this.tabIndex = index;
       },
+      gotoIndex() {
+        plus.webview.currentWebview().close()
+        let wb = plus.webview.getLaunchWebview();
+        wb.evalJS('document.showHomeWebview()')
+      }
       //    dataGet() {
       //      return this.$http.get(this, api.couponList, {
       //        appid: api.appid,
