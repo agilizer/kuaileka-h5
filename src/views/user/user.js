@@ -14,10 +14,16 @@ import FastClick from 'fastclick'
 FastClick.attach(document.body);
 //axios请求引入
 Vue.use(axiosRequest)
+import { ToastPlugin, AlertPlugin, LoadingPlugin } from 'vux'
+Vue.use(LoadingPlugin)
+Vue.use(ToastPlugin)
+Vue.use(AlertPlugin)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

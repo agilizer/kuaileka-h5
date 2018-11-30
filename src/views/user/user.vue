@@ -30,6 +30,7 @@
 
 <script>
   import db from '../../plugins/db'
+  import api from '../../service/api'
   export default {
     name: 'home',
     components: {},

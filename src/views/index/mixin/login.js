@@ -52,9 +52,14 @@ const mixin = {
         city: this.userInfo.city,
         country: this.userInfo.country
       })
-      //      console.log(JSON.stringify(res))
-      //      alert(JSON.stringify(res))
     },
+    //获取会员信息
+    async getMemberInfo() {
+      let res = await this.$http.get(this, api.memberInfo, {
+        appid: api.appid,
+        openid: db.get('userInfo').openid
+      })
+    }
   },
 };
 

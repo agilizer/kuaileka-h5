@@ -18,7 +18,7 @@
           <em :style="{height:cupPercent+'rem',top:1-cupPercent+'rem'}"></em>
         </div>
       </div>
-      <p>咖小白： 再次消费5次可获得免费优惠券</p>
+      <p>{{levelName}}： 再次消费{{cupActivityNum - cuped}}次可获得免费优惠券</p>
     </div>
     <div class="container product-container">
       <div class="product-list">
@@ -56,7 +56,8 @@
     data() {
       return {
         cupActivityNum: 5,
-        cuped: 1,
+        cuped: 0,
+        levelName: '咖小白',
         baseURL: 'https://www.kuailecoffee.com',
         local: {
           latitude: '39.95896', //纬度
@@ -88,11 +89,9 @@
         let rem = document.documentElement.style.fontSize.replace('px', '');
         this.swiperHeight = parseInt(2.54 * rem) + 'px';
         this.swiperInit = true;
-        console.log(this.swiperHeight)
       }, 500)
       this.init();
       this.addressDetermine(); //定位
-      if(window.plus) {}
     },
     computed: {
       cupPercent() {
@@ -105,6 +104,22 @@
           appid: api.appid,
         })
         this.bannerList = res;
+        if(db.get('userInfo')) this.getMemberInfo();
+      },
+      //获取会员信息
+      async getMemberInfo() {
+        //用户信息
+        let MemberInfo = await this.$http.get(this, api.memberInfo, {
+          appid: api.appid,
+          openid: db.get('userInfo').openid
+        })
+        this.cupActivityNum = MemberInfo.promoteCount;
+        this.cuped = MemberInfo.levelCount;
+        //      //是否有优惠券到账
+        //      let shareCoupon = await this.$http.get(this, api.shareCoupon, {
+        //        appid: api.appid,
+        //        openid: db.get('userInfo').openid
+        //      })
       },
       //确定最近的咖啡机的位置
       async addressDetermine() {
@@ -217,14 +232,17 @@
           //        })
         }
 
-        //判断是否登录
+        //判断是否登录，没有登录则请求登录
         if(!db.get('userInfo')) {
           this.$vux.loading.show({
             text: '登录中...'
           })
           let loginRes = await this.wecatLogin();
-          this.$vux.loading.hide()
+          this.$vux.loading.hide();
+          //若拒绝微信授权登录则不在执行下一步操作
           if(loginRes == 201) return;
+          //获取用户会员信息
+          this.getMemberInfo();
         }
         this.$vux.loading.show({
           text: '加载中...'
