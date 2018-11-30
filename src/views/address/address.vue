@@ -1,12 +1,12 @@
 <template>
   <div class="address">
-    <me-scroll :style="{'height':scrollerHeight}" class="address-list message-scroller" @up="meUp" @down="meDown" @init="meInit">
+    <me-scroll :style="{'height':scrollerHeight}" class="address-list message-scroller" @up="meUp" @down="meDown"
+               @init="meInit">
       <div class="item" v-for="(i,index) in list" :key="i.id" @click="selectAddress(i)">
-        <div class="img">
-          <img src="../../assets/images/im_cardbg2.png" />
+        <div class="img"
+             :style="{background: 'url('+cafeimg+') top right no-repeat / contain, url('+cafebg+') top left no-repeat / contain'}">
         </div>
         <div class="intro">
-          <img class="bg-img" src="../../assets/images/im_cardbg.png" />
           <h2 class="ellipsis">{{i.name}}</h2>
           <p class="ellipsis">{{i.location}}</p>
           <p>{{i.distance}}{{i.unit}}</p>
@@ -24,7 +24,7 @@
       </div>
     </me-scroll>
     <div class="scan-enter" v-if="isiOS">
-      <img src="../../assets/images/scan.png" />
+      <img src="../../assets/images/scan.png"/>
     </div>
   </div>
 </template>
@@ -33,6 +33,7 @@
   import db from '../../plugins/db'
   import api from '../../service/api'
   import MeScroll from '../../components/common/me-scroll.vue'
+
   export default {
     name: 'home',
     components: {
@@ -40,6 +41,9 @@
     },
     data() {
       return {
+        cafeimg: require('../../assets/images/im_cardbg.png'),
+        cafebg: require('../../assets/images/im_cardbg2.png'),
+
         mescroll: null,
         scrollerHeight: '100vh',
         page: 1,
@@ -53,11 +57,13 @@
       }
     },
     created() {
-      const u = navigator.userAgent;
-      this.isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       //    this.local = db.get('local').coords;
-      if(window.plus) {} else {
-        document.addEventListener("plusready", () => {}, false);
+      if (window.plus) {
+        this.isiOS = plus.os.name === 'iOS';
+      } else {
+        document.addEventListener("plusready", () => {
+          this.isiOS = plus.os.name === 'iOS';
+        }, false);
       }
     },
     methods: {
@@ -91,9 +97,9 @@
       async fetchMore(page) {
         this.page = page.num;
         let data = await this.dataGet();
-        if(page.num == 1) this.list = [];
+        if (page.num == 1) this.list = [];
         let nextPage = true;
-        if(data.length < this.size) {
+        if (data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);
@@ -107,7 +113,7 @@
         const data = await this.dataGet();
         this.list = [];
         let nextPage = true;
-        if(data.length < this.size) {
+        if (data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);
@@ -122,4 +128,7 @@
   }
 </script>
 <style>
+  .address .address-list .item .img {
+    background: url(../../assets/images/im_cardbg.png) top right no-repeat / contain, url(../../assets/images/im_cardbg2.png) top left no-repeat / contain;
+  }
 </style>

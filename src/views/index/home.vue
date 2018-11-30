@@ -12,7 +12,7 @@
     </swiper>
     <div class="announce">
       <div class="cup-acc">
-        <img class="cup" src="../../assets/images/coffee-cup.png" />
+        <img class="cup" src="../../assets/images/coffee-cup.png"/>
         <div class="circle">
           <div class="num">{{cuped}}/{{cupActivityNum}}</div>
           <em :style="{height:cupPercent+'rem',top:1-cupPercent+'rem'}"></em>
@@ -22,10 +22,11 @@
     </div>
     <div class="container product-container">
       <div class="product-list">
-        <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
+        <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub"
+                      :total="totalCount"></product-item>
       </div>
     </div>
-    <div class="goto-buy" v-if="isiOS" @click="showPayView">
+    <div class="goto-buy" v-if="isiOS" @click="goToPosition">
       <span>去这里</span>
     </div>
     <div class="button-buy" @click="showPayView">
@@ -37,13 +38,18 @@
 </template>
 
 <script>
-  import { Swiper, SwiperItem } from 'vux'
+  import {Swiper, SwiperItem} from 'vux'
   import ProductItem from '../../components/common/product-item'
   import payPopup from '../../components/common/pay-popup'
   import db from '../../plugins/db'
+
   let clientHeight = db.get('clientHeight')
   import api from '../../service/api'
   import login from '../../views/index/mixin/login'
+
+  import baiduMapWalkNaviPlugin from '../../plugins/baiduMapWalkNaviPlugin'
+  import baiduLocationPlugin from '../../plugins/baiduLocationPlugin'
+
   export default {
     name: 'home',
     mixins: [login],
@@ -78,8 +84,6 @@
       }
     },
     created() {
-      const u = navigator.userAgent;
-      this.isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
       //监听咖啡机地址变化
       document.addressChange = (res) => {
         this.address = res;
@@ -92,6 +96,13 @@
       }, 500)
       this.init();
       this.addressDetermine(); //定位
+      if (window.plus) {
+        this.baiduMapPluginInit();
+      } else {
+        document.addEventListener("plusready", () => {
+          this.baiduMapPluginInit();
+        }, false);
+      }
     },
     computed: {
       cupPercent() {
@@ -99,12 +110,17 @@
       }
     },
     methods: {
+      baiduMapPluginInit() {
+        baiduMapWalkNaviPlugin();
+        baiduLocationPlugin();
+        this.isiOS = plus.os.name === 'iOS';
+      },
       async init() {
         let res = await this.$http.get(this, api.advertisement, {
           appid: api.appid,
         })
         this.bannerList = res;
-        if(db.get('userInfo')) this.getMemberInfo();
+        if (db.get('userInfo')) this.getMemberInfo();
       },
       //获取会员信息
       async getMemberInfo() {
@@ -123,7 +139,7 @@
       },
       //确定最近的咖啡机的位置
       async addressDetermine() {
-        //      this.local = db.get('local').coords;
+        this.local = db.get('local').coords;
         let res = await this.$http.get(this, api.machineList, {
           appid: api.appid,
           lat: this.local.latitude,
@@ -138,34 +154,34 @@
         let mAddress = [],
           kmAddress = [];
         res.forEach(i => {
-          if(i.unit == 'm') {
+          if (i.unit == 'm') {
             mAddress.push(i)
           } else {
             kmAddress.push(i)
           }
         })
         //如果距离单位为m的只有一个，那么最近咖啡机就是这个
-        if(mAddress.length == 1) {
+        if (mAddress.length == 1) {
           this.address = mAddress[0]
-        } else if(mAddress.length > 1) {
+        } else if (mAddress.length > 1) {
           //确定最近的咖啡机（单位为m）
           let min = mAddress[0]
           mAddress.forEach(i => {
-            if(i.distance < min.distance) min = i;
+            if (i.distance < min.distance) min = i;
           })
           this.address = min;
         } else {
           //确定最近的咖啡机（单位为km）
           let min = kmAddress[0]
           kmAddress.forEach(i => {
-            if(i.distance < min.distance) min = i;
+            if (i.distance < min.distance) min = i;
           })
           this.address = min;
         }
       },
       //更换地点页面
       gotoAddressChoose() {
-        if(this.addressWebview) {
+        if (this.addressWebview) {
           plus.webview.show(this.addressWebview, 'slide-in-right');
         } else {
           this.addressWebview = plus.webview.create('address.html', 'address', {
@@ -187,16 +203,16 @@
       },
       //订单+
       orderCup(item) {
-        if(this.totalCount > 0) {
+        if (this.totalCount > 0) {
           this.$vux.toast.text('目前仅支持同时购买一份')
         } else {
           this.totalCount++;
-          if(this.orderList.length == 0) {
+          if (this.orderList.length == 0) {
             item.num = 1;
             this.orderList.push(item)
           } else {
             this.orderList.forEach(i => {
-              if(item.code == i.code) {
+              if (item.code == i.code) {
                 i.num++
               } else {
                 item.num = 1;
@@ -209,8 +225,8 @@
       //订单-
       orderCupSub(item) {
         this.orderList.forEach((i, index) => {
-          if(item.code == i.code) {
-            if(i.num > 1) {
+          if (item.code == i.code) {
+            if (i.num > 1) {
               i.num++
             } else {
               this.orderList.splice(index, 1)
@@ -220,11 +236,11 @@
         })
       },
       async showPayView() {
-        if(this.orderList.length == 0) {
+        if (this.orderList.length == 0) {
           this.$vux.toast.text('请选择商品')
           return;
         }
-        if(window.plus) {
+        if (window.plus) {
           //        db.set('homeViewHeight', plus.webview.currentWebview().getStyle().height);
           //        plus.webview.currentWebview().setStyle({
           //          height: clientHeight + 'px',
@@ -233,14 +249,14 @@
         }
 
         //判断是否登录，没有登录则请求登录
-        if(!db.get('userInfo')) {
+        if (!db.get('userInfo')) {
           this.$vux.loading.show({
             text: '登录中...'
           })
           let loginRes = await this.wecatLogin();
           this.$vux.loading.hide();
           //若拒绝微信授权登录则不在执行下一步操作
-          if(loginRes == 201) return;
+          if (loginRes == 201) return;
           //获取用户会员信息
           this.getMemberInfo();
         }
@@ -255,16 +271,42 @@
           tip: false
         })
         this.$vux.loading.hide()
-        if(res.success == true) {
+        if (res.success == true) {
           this.couponList = res.result;
           this.payPopupShow = true;
         } else {
           this.$vux.toast.text('系统错误，请稍候重试')
         }
       },
+      goToPosition() {
+        // 加载定位
+        window.plus.baiduLocation.getCurrentPosition((res) => {
+          window.plus.baiduMapWalkNavi.goToPosition(res.latitude, res.longitude,
+            this.address.lat, this.address.lng, (res) => {
+
+            }, (res) => {
+              plus.nativeUI.alert("导航加载失败，请重试！", null, "加载错误", "确认");
+            })
+        }, () => {
+          plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
+            if (e.index === 1) {
+              var UIApplication = plus.ios.import("UIApplication");
+              var NSURL = plus.ios.import("NSURL");
+              var setting = NSURL.URLWithString("UIApplicationOpenSettingsURLString");
+              var application = UIApplication.sharedApplication();
+              application.openURL(setting);
+              plus.ios.deleteObject(setting);
+              plus.ios.deleteObject(application);
+            }
+          }, {
+            title: "定位服务已关闭",
+            buttons: ['取消', '去设置'],
+          }, "确认");
+        })
+      }
     },
     watch: {
-      async 'address.machineCode' (value) {
+      async 'address.machineCode'(value) {
         let res = await this.$http.get(this, api.productList, {
           machineCode: value
         })
