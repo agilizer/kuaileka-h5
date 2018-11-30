@@ -5,7 +5,8 @@
         {{address.name}}<i class="angle-white-bottom"></i>
       </div>
     </div>
-    <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight" class="dots-class">
+    <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight"
+            style="margin-top: -1px" class="dots-class">
       <swiper-item class="swiper-banner-img" v-for="(item, index) in bannerList" :key="index">
         <img :src="baseURL+item.src">
       </swiper-item>
