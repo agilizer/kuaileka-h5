@@ -1,7 +1,7 @@
 <template>
   <div class="message">
     <div class="line" ref="mline"></div>
-    <me-scroll :style="{'height':scrollerHeight}" @up="meUp" @down="meDown" @init="meInit" :up=meScrollUp>
+    <me-scroll :style="{'height':scrollerHeight}" :up=meScrollUp @up="meUp" @down="meDown" @init="meInit">
       <ul ref="mlist" class="message-list" v-if="!noData">
         <li v-for="i in messageList" :key='i.id'>
           <h2>{{i.title}}</h2>
@@ -18,7 +18,7 @@
   import api from '../../service/api'
   import MeScroll from '../../components/common/me-scroll.vue'
   export default {
-    name: 'home',
+    name: 'message',
     components: {
       MeScroll
     },
@@ -32,17 +32,10 @@
         scrollerHeight: '100vh',
         page: 0,
         size: 100,
+        noData: false
       }
     },
-    created() {
-      //mescroller高度确定
-      //    setTimeout(() => {
-      //      let rem = document.documentElement.style.fontSize.replace('px', ''),
-      //        height = document.body.clientHeight;
-      //      this.scrollerHeight = parseInt(height - (.8 * rem) - 44) + 'px';
-      //    }, 500)
-      // this.getMessageList();
-    },
+    created() {},
     mounted() {},
     methods: {
       async getMessageList() {
@@ -52,14 +45,6 @@
           openid: db.get('userInfo').openid,
         })
         this.messageList = res.list;
-        //      {
-        //        "list": [],
-        //        "pageNo": 0,
-        //        "pageSize": 10,
-        //        "totalCount": 0,
-        //        "pageStartIndex": 0,
-        //        "totalPage": 0
-        //      }
       },
       layout() {
         this.$nextTick(() => {
@@ -67,20 +52,20 @@
           let fontsize = document.documentElement.style.fontSize.replace('px', '')
           let ul = this.$refs.mlist.children;
           for(let i = 2; i < ul.length; i++) {
-            let li2 = ul[i - 2];
-            let heightTop2 = li2.offsetHeight + li2.offsetTop;
-            let li1 = ul[i - 1];
-            let offsetTop1 = li1.offsetTop;
-            let li = ul[i];
-            if(i % 2 == 0) {
-              //左边
-              let theTop = heightTop2 >= offsetTop1 ? heightTop2 : offsetTop1;
-              li.style.top = (theTop + .6 * fontsize) + 'px';
-            } else {
-              //右边
-              let theTop = heightTop2 >= offsetTop1 ? heightTop2 : offsetTop1;
-              li.style.top = (theTop + .6 * fontsize) + 'px';
-            }
+            let li2 = ul[i - 2]; //前第2个li
+            let heightTop2 = li2.offsetHeight + li2.offsetTop; //前第2个li的距页面顶部高度加自身高度
+            let li1 = ul[i - 1]; //前1个li
+            let offsetTop1 = li1.offsetTop; //前1个li距页面顶部高度
+            let li = ul[i]; //当前li
+            //          if(i % 2 == 0) {
+            //            //左边
+            //            let theTop = heightTop2 >= offsetTop1 ? heightTop2 : offsetTop1;
+            //            li.style.top = (theTop + .6 * fontsize) + 'px';
+            //          } else {
+            //右边
+            let theTop = heightTop2 >= offsetTop1 ? heightTop2 : offsetTop1;
+            li.style.top = (theTop + .6 * fontsize) + 'px';
+            //          }
           }
           let line = this.$refs.mline;
           let li = ul[ul.length - 1];
@@ -125,8 +110,8 @@
           nextPage = false;
         }
         this.messageList = this.messageList.concat(data.list);
-        this.layout()
         this.noData = this.messageList.length == 0;
+        this.layout()
         this.mescroll.endSuccess(data.list.length, nextPage);
         this.mescroll.endErr();
       },
@@ -141,14 +126,12 @@
           nextPage = false;
         }
         this.messageList = this.messageList.concat(data.list);
-        this.layout()
         this.noData = this.messageList.length == 0;
+        this.layout()
         this.mescroll.endSuccess(data.list.length, nextPage);
         this.mescroll.endErr();
       },
     }
   }
 </script>
-<style>
-
-</style>
+<style></style>

@@ -178,10 +178,6 @@
         const wb = plus.webview.currentWebview();
         wb.remove(this.tabbarItems[this.currentIndex].webview);
         wb.append(this.tabbarItems[index].webview);
-        //进入消息页面自动刷新
-        //      if(index == 0) {
-        //        this.tabbarItems[1].webview.evalJS('document.funcRefresh()');
-        //      }
         this.currentIndex = index;
       },
     }
