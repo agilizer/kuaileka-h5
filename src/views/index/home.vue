@@ -50,6 +50,7 @@
 
   import baiduMapWalkNaviPlugin from '../../plugins/baiduMapWalkNaviPlugin'
   import baiduLocationPlugin from '../../plugins/baiduLocationPlugin'
+  import {consolePlugin, xconsole} from '../../plugins/consolePlugin'
 
   export default {
     name: 'home',
@@ -96,7 +97,6 @@
         this.swiperInit = true;
       }, 500)
       this.init();
-      this.addressDetermine(); //定位
       if (window.plus) {
         this.baiduMapPluginInit();
       } else {
@@ -112,9 +112,53 @@
     },
     methods: {
       baiduMapPluginInit() {
+        this.w = plus.nativeUI.showWaiting("加载中...");
         baiduMapWalkNaviPlugin();
         baiduLocationPlugin();
+        // 安装日志插件
+        consolePlugin();
         this.isiOS = plus.os.name === 'iOS';
+        if (plus.os.name === 'iOS') {
+          // 获取定位数据
+          window.plus.baiduLocation.getCurrentPosition((args) => {
+            const p = {};
+            p.coords = {};
+            p.coords['latitude'] = args.latitude;
+            p.coords['longitude'] = args.longitude;
+            xconsole.log(JSON.stringify(p))
+            db.set('local', p)
+            this.addressDetermine(); //定位
+            this.w.close()
+          }, (result) => {
+            xconsole.log(result)
+            // 需要处理一下错误信息
+            plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
+              if (e.index === 1) {
+                plus.runtime.openURL("app-settings:")
+              }
+            }, {
+              title: "定位服务已关闭",
+              buttons: ['取消', '去设置'],
+            }, "确认");
+            this.w.close()
+          })
+        } else {
+          // android 定位
+          plus.geolocation.getCurrentPosition(p => {
+            //        this.latitude = p.coords.latitude; //维度
+            //        this.longitude = p.coords.longitude; //经度
+            //        this.altitude = p.coords.altitude //海拔
+            db.set('local', p)
+            //定位成功之后加载home页面
+            this.addressDetermine(); //定位
+            this.w.close()
+          }, function (e) {
+            //('Geolocation error: ' + e.message);
+          }, {
+            provider: 'baidu',
+            coordsType: 'bd09ll'
+          });
+        }
       },
       async init() {
         let res = await this.$http.get(this, api.advertisement, {

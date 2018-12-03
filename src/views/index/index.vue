@@ -1,8 +1,9 @@
 <template>
   <div class="index">
     <tabbar ref="tabbarIndex" :class="{'iphone-x-bottom':isIphoneX}">
-      <tabbar-item v-for="(tabbar,index) in tabbarItems" @on-item-click="tabbarItemClick(index)" :selected="currentIndex == index" :show-dot="tabbar.showDot" :key="tabbar.id">
-        <img class="tabbar-img" slot="icon" :src="tabbar['icon'+(currentIndex == index?1:0)]" />
+      <tabbar-item v-for="(tabbar,index) in tabbarItems" @on-item-click="tabbarItemClick(index)"
+                   :selected="currentIndex == index" :show-dot="tabbar.showDot" :key="tabbar.id">
+        <img class="tabbar-img" slot="icon" :src="tabbar['icon'+(currentIndex == index?1:0)]"/>
       </tabbar-item>
     </tabbar>
   </div>
@@ -19,7 +20,7 @@
   import iPhoneXSafearea from '../../plugins/mixins/iphoneX-safe-area'
 
   import baiduLocationPlugin from '../../plugins/baiduLocationPlugin'
-  import { consolePlugin, xconsole } from '../../plugins/consolePlugin'
+  import {consolePlugin, xconsole} from '../../plugins/consolePlugin'
 
   export default {
     name: 'index',
@@ -84,7 +85,7 @@
         wb.append(this.tabbarItems[0].webview);
         this.currentIndex = 0
       }
-      if(window.plus) {
+      if (window.plus) {
         this.init();
       } else {
         document.addEventListener("plusready", () => {
@@ -94,72 +95,39 @@
     },
     methods: {
       init() {
-        this.w = plus.nativeUI.showWaiting("加载中...");
         //顶部状态栏背景和主题
         plus.navigator.setStatusBarBackground('#404040');
         plus.navigator.setStatusBarStyle('light');
         let outTime = 0;
-        if(plus.os.name === 'Android') outTime = 500; //延迟加载webview, Android系统500ms延迟，iOS不用
-        if(plus.os.name === 'iOS') {
-          // 安装定位插件
-          baiduLocationPlugin();
-          // 安装日志插件
-          consolePlugin();
-          // 获取定位数据
-          window.plus.baiduLocation.getCurrentPosition((args) => {
-            const p = {};
-            p.coords = {};
-            p.coords['latitude'] = args.latitude;
-            p.coords['longitude'] = args.longitude;
-            xconsole.log(JSON.stringify(p))
-            db.set('local', p)
-            //定位成功之后加载home页面
-            setTimeout(() => {
-              this.tabbarItems[this.currentIndex].webview = this.createWebview(this.tabbarItems[this.currentIndex]);
-              plus.webview.currentWebview().append(this.tabbarItems[this.currentIndex].webview);
-              //去掉加载中...
-              this.$vux.loading.hide()
-            }, outTime);
-            this.w.close()
-          }, (result) => {
-            xconsole.log(result)
-            // 需要处理一下错误信息
-            plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
-              if(e.index === 1) {
-                plus.runtime.openURL("app-settings:")
-              }
-            }, {
-              title: "定位服务已关闭",
-              buttons: ['取消', '去设置'],
-            }, "确认");
-            this.w.close()
-          })
-        } else {
-          // android 定位
-          plus.geolocation.getCurrentPosition(p => {
-            //        this.latitude = p.coords.latitude; //维度
-            //        this.longitude = p.coords.longitude; //经度
-            //        this.altitude = p.coords.altitude //海拔
-            db.set('local', p)
-            //定位成功之后加载home页面
-            setTimeout(() => {
-              this.tabbarItems[this.currentIndex].webview = this.createWebview(this.tabbarItems[this.currentIndex]);
-              plus.webview.currentWebview().append(this.tabbarItems[this.currentIndex].webview);
-              //去掉加载中...
-              this.w.close()
-            }, outTime);
-          }, function(e) {
-            //('Geolocation error: ' + e.message);
-          }, {
-            provider: 'baidu',
-            coordsType: 'bd09ll'
-          });
-        }
+        if (plus.os.name === 'Android') outTime = 500; //延迟加载webview, Android系统500ms延迟，iOS不用
+        setTimeout(() => {
+          this.tabbarItems[this.currentIndex].webview = this.createWebview(this.tabbarItems[this.currentIndex]);
+          plus.webview.currentWebview().append(this.tabbarItems[this.currentIndex].webview);
+        }, outTime);
+
+        //网络请求
+        document.addEventListener("netchange", this.onNetChange, false);
 
         //竖屏
         plus.screen.lockOrientation("portrait-primary");
       },
+      // 网络环境发生变化
+      onNetChange() {
+        const nt = plus.networkinfo.getCurrentType();
+        switch (nt) {
+          case plus.networkinfo.CONNECTION_ETHERNET:
+          case plus.networkinfo.CONNECTION_WIFI:
 
+            break;
+          case plus.networkinfo.CONNECTION_CELL2G:
+          case plus.networkinfo.CONNECTION_CELL3G:
+          case plus.networkinfo.CONNECTION_CELL4G:
+
+            break;
+          default:
+            break;
+        }
+      },
       //创建webview
       createWebview(tabbarItem) {
         //初始加载工作台webview
@@ -185,26 +153,26 @@
       //append的webview的高度（除去tabbar高度）
       fixHeight() {
         let tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight;
-        if(this.currentIndex == 0) db.set('clientHeight', document.documentElement.clientHeight);
+        if (this.currentIndex == 0) db.set('clientHeight', document.documentElement.clientHeight);
         return document.documentElement.clientHeight - tabbarHeight;
       },
       fixBottom() {
         let tabbarHeight = 0;
         tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight
-        if(this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
+        if (this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
         return tabbarHeight;
       },
       //底部tabbar切换
       async tabbarItemClick(index) {
-        if(!window.plus) return; //判断是不是移动设备环境
+        if (!window.plus) return; //判断是不是移动设备环境
         //判断是否登录
-        if(!db.get('userInfo')) {
+        if (!db.get('userInfo')) {
           await this.wecatLogin();
           let loginRes = await this.wecatLogin();
-          if(loginRes == 201) return;
+          if (loginRes == 201) return;
         }
         //webview没有要创建
-        if(!this.tabbarItems[index].webview) {
+        if (!this.tabbarItems[index].webview) {
           this.tabbarItems[index].webview = this.createWebview(this.tabbarItems[index]);
         }
         const wb = plus.webview.currentWebview();
