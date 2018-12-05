@@ -108,7 +108,7 @@
             services.forEach(i => {
               console.log(JSON.stringify(i))
               if(i.id == 'weixin') sweixin = i;
-            })
+            });
             let msg = {
               type: 'miniProgram',
               title: '分享小程序标题',
@@ -142,10 +142,10 @@
           }
         }
         //      "web"-分享网页类型，title（必填）、content（必填）、thumbs（必填）、href（网页url，必填）属性值有效；
-        //      "text"-分享文字类型，content（必填）属性值有效； "image"-分享图片类型，pictures（必填）属性值有效； 
+        //      "text"-分享文字类型，content（必填）属性值有效； "image"-分享图片类型，pictures（必填）属性值有效；
         //      "music"-分享音乐类型，title（必填）、content（必填）、thumbs（必填）、media（音乐url，必填）属性值有效；
-        //      "video"-分享视频类型，title（必填）、content（必填）、thumbs（必填）、media（视频url，必填）属性值有效； 
-        //      "miniProgram"-分享小程序类型（仅支持分享到好友），title（必填）、content（必填）、thumbs（图片小于128K，宽高比为5:4，必填）、miniProgram（小程序参数，必填）属性值有效； 
+        //      "video"-分享视频类型，title（必填）、content（必填）、thumbs（必填）、media（视频url，必填）属性值有效；
+        //      "miniProgram"-分享小程序类型（仅支持分享到好友），title（必填）、content（必填）、thumbs（图片小于128K，宽高比为5:4，必填）、miniProgram（小程序参数，必填）属性值有效；
         //      没有设置type时，如果href值有效则默认值为"web"，如果pictures有效则默认值为"image"，否则默认值为"text"。
         //      新浪微博分享平台，可取值： "web"-分享网页类型，content、href（网页url，必填），分享链接添加到内容之后；
         //      "text"-分享文字类型，content（必填）属性有效，可在内容中直接插入链接地址；

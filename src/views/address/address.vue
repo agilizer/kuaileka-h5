@@ -2,13 +2,14 @@
   <div class="address">
     <me-scroll class="address-list message-scroller" meid='body' @up="meUp" @down="meDown" @init="meInit">
       <div class="item" v-for="(i,index) in list" :key="i.id" @click="selectAddress(i)">
-        <div class="img" :style="{background: 'url('+cafeimg+') top right no-repeat / contain, url('+cafebg+') top left no-repeat / contain'}">
+        <div class="img"
+             :style="{background: 'url('+cafeimg+') top right no-repeat / contain, url('+cafebg+') top left no-repeat / contain'}">
         </div>
         <div class="intro">
           <h2 class="ellipsis">{{i.name}}</h2>
           <p class="ellipsis">{{i.location}}</p>
           <p>{{i.distance}}{{i.unit}}</p>
-          <p>月销&emsp;3</p>
+          <!--<p>月销&emsp;3</p>-->
           <div class="price">
             <i>￥</i>
             <span>{{i.lowestPrice}}</span>
@@ -22,7 +23,7 @@
       </div>
     </me-scroll>
     <div class="scan-enter" @click="showARViewController" v-if="isiOS">
-      <img src="../../assets/images/scan.png" />
+      <img src="../../assets/images/scan.png"/>
     </div>
   </div>
 </template>
@@ -56,9 +57,9 @@
       }
     },
     created() {
-      
+
       this.local = db.get('local').coords;
-      if(window.plus) {
+      if (window.plus) {
         this.initPlugins();
       } else {
         document.addEventListener("plusready", () => {
@@ -102,9 +103,9 @@
       async fetchMore(page) {
         this.page = page.num;
         let data = await this.dataGet();
-        if(page.num == 1) this.list = [];
+        if (page.num == 1) this.list = [];
         let nextPage = true;
-        if(data.length < this.size) {
+        if (data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);
@@ -118,7 +119,7 @@
         const data = await this.dataGet();
         this.list = [];
         let nextPage = true;
-        if(data.length < this.size) {
+        if (data.length < this.size) {
           nextPage = false;
         }
         this.list = this.list.concat(data);
@@ -126,7 +127,7 @@
         this.mescroll.endErr();
       },
       selectAddress(i) {
-        if(!window.plus) return;
+        if (!window.plus) return;
         plus.webview.getWebviewById('home').evalJS('document.addressChange(' + JSON.stringify(i) + ')')
         plus.webview.currentWebview().hide('slide-out-right');
       },
@@ -137,13 +138,19 @@
         // 获取定位数据
         window.plus.baiduLocation.getCurrentPosition((args) => {
           this.w.close();
-          if(!args.address) {
+          if (!args.address) {
             plus.nativeUI.alert('定位信息加载错误', null, '系统错误', '确定');
             return;
           }
           window.plus.arvixAR.showARViewController(args.latitude, args.longitude,
-            args.address, () => {
-
+            args.address, (args) => {
+              const message = JSON.parse(args).message;
+              this.arCloseToHome({
+                machineCode:message.machineCode,
+                name:message.machineName,
+                lat:message.latitude,
+                lng:message.longitude
+              });
             }, () => {
 
             });
@@ -152,7 +159,7 @@
           xconsole.log(result)
           // 需要处理一下错误信息
           plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
-            if(e.index === 1) {
+            if (e.index === 1) {
               plus.runtime.openURL("app-settings:")
             }
           }, {
@@ -161,6 +168,11 @@
           }, "确认");
           this.w.close()
         })
+      },
+      //AR功能确认咖啡机之后，关掉AR界面以及地址列表页面
+      arCloseToHome(res) {
+        plus.webview.getWebviewById('home').evalJS('document.addressChange(' + JSON.stringify(res) + ')')
+        plus.webview.currentWebview().hide('');
       }
     }
   }

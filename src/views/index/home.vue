@@ -361,11 +361,6 @@
             buttons: ['取消', '去设置'],
           }, "确认");
         })
-      },
-      //AR功能确认咖啡机之后，关掉AR界面以及地址列表页面
-      ARcloseToHome() {
-        plus.webview.getWebviewById('address').hidex();
-        
       }
     },
     watch: {
