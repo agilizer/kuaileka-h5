@@ -147,7 +147,10 @@
           bounce: 'vertical',
           height: this.fixHeight() + 'px',
           bottom: plus.os.name === 'iOS' ? null : (this.fixBottom() + 'px'),
-          bounceBackground: '#f4f4f4'
+          bounceBackground: '#f4f4f4',
+          transition:{
+          	duration:'.3s'
+          }
         });
       },
       //append的webview的高度（除去tabbar高度）

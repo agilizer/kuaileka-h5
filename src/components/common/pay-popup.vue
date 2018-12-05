@@ -276,8 +276,10 @@
           //          let webView = plus.webview.getWebviewById('home')
           //          webView.setStyle({
           //            height: homeViewHeight + 'px',
-          //            bottom: tabbarHeight + 'px'
+          //            bottom: plus.os.name === 'iOS' ? null : (tabbarHeight + 'px'),
           //          })
+          //          alert(plus.webview.currentWebview().getStyle().height)
+          //          alert(plus.webview.currentWebview().getStyle().bottom)
           //        }
         }
       },

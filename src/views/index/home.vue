@@ -78,7 +78,6 @@
         bannerList: [],
         productList: [],
         orderList: [],
-        totalCount: 0,
         payPopupShow: false,
         isiOS: false,
         couponList: [], //优惠券列表
@@ -107,6 +106,9 @@
       }
     },
     computed: {
+      totalCount() {
+        return this.orderList.length;
+      },
       cupPercent() {
         return this.cuped / this.cupActivityNum;
       },
@@ -230,7 +232,7 @@
       },
       //超过10km的的咖啡机就不导航了
       hideARNav() {
-        if(this.address.distance > 10 && this.address.unit == km) this.isShowARNav = false;
+        if(this.address.distance > 10 && this.address.unit == 'km') this.isShowARNav = false;
       },
       //更换地点页面
       gotoAddressChoose() {
@@ -259,7 +261,6 @@
         if(this.totalCount > 0) {
           this.$vux.toast.text('目前仅支持同时购买一份')
         } else {
-          this.totalCount++;
           if(this.orderList.length == 0) {
             item.num = 1;
             this.orderList.push(item)
@@ -280,11 +281,10 @@
         this.orderList.forEach((i, index) => {
           if(item.code == i.code) {
             if(i.num > 1) {
-              i.num++
+              i.num--
             } else {
               this.orderList.splice(index, 1)
             }
-            this.totalCount--;
           }
         })
       },
@@ -294,11 +294,12 @@
           return;
         }
         if(window.plus) {
-          //        db.set('homeViewHeight', plus.webview.currentWebview().getStyle().height);
-          //        plus.webview.currentWebview().setStyle({
-          //          height: clientHeight + 'px',
-          //          bottom: '0'
-          //        })
+//        let height = parseInt(plus.webview.currentWebview().getStyle().height);
+//        db.set('homeViewHeight', height);
+//        plus.webview.currentWebview().setStyle({
+//          height: clientHeight + 'px',
+//          bottom: '0'
+//        })
         }
 
         //判断是否登录，没有登录则请求登录
@@ -370,6 +371,7 @@
           machineCode: value
         })
         this.productList = res;
+        this.orderList = [];
       },
     }
   }
