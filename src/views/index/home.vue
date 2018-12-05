@@ -339,7 +339,9 @@
         window.plus.baiduLocation.getCurrentPosition((res) => {
           this.w.close();
           window.plus.baiduMapWalkNavi.goToPosition(res.latitude, res.longitude,
-            this.address.lat, this.address.lng, (res) => {}, (res) => {
+            this.address.lat, this.address.lng, (res) => {
+
+            }, (res) => {
               plus.nativeUI.alert("导航加载失败，请重试！", null, "加载错误", "确认");
             })
         }, () => {
@@ -359,9 +361,15 @@
             buttons: ['取消', '去设置'],
           }, "确认");
         })
+      },
+      //AR功能确认咖啡机之后，关掉AR界面以及地址列表页面
+      ARcloseToHome() {
+        plus.webview.getWebviewById('address').hidex();
+        
       }
     },
     watch: {
+      //watch咖啡机的变化更新相应的咖啡机产品
       async 'address.machineCode' (value) {
         let res = await this.$http.get(this, api.productList, {
           machineCode: value
