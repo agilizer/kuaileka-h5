@@ -167,7 +167,6 @@
         if (!window.plus) return; //判断是不是移动设备环境
         //判断是否登录
         if (!db.get('userInfo')) {
-          await this.wecatLogin();
           let loginRes = await this.wecatLogin();
           if (loginRes == 201) return;
         }
@@ -179,7 +178,7 @@
         wb.remove(this.tabbarItems[this.currentIndex].webview);
         wb.append(this.tabbarItems[index].webview);
         this.currentIndex = index;
-      },
+      }
     }
   }
 </script>

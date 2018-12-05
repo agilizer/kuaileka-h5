@@ -14,6 +14,7 @@ const mixin = {
             s.login(function(e) {
               //("登录认证成功！");
               s.getUserInfo(function(e) {
+                _this.userInfo = s.userInfo
                 _this.addMember();
                 db.set('userInfo', s.userInfo);
                 resolve(200);
@@ -26,6 +27,7 @@ const mixin = {
               resolve(201);
             });
           } else {
+            _this.userInfo = s.userInfo
             ///("已经登录认证！");
             db.set('userInfo', s.userInfo);
             resolve(200);

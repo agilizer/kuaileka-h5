@@ -103,35 +103,28 @@
       share() {
         if(window.plus) {
           // 扩展API加载完毕，现在可以正常调用扩展API
-          let auths, sweixin;
+          let sweixin;
           plus.share.getServices(function(services) {
-            sweixin = services[3];
+            services.forEach(i => {
+              console.log(JSON.stringify(i))
+              if(i.id == 'weixin') sweixin = i;
+            })
             let msg = {
               type: 'miniProgram',
               title: '分享小程序标题',
-              content: '分享小程序描述内容。',
-              thumbs: [
-                'http://thirdwx.qlogo.cn/mmopen/vi_32/rgbaiaDTeNzSI6jUiaRsZSian3ynQnNeSGOdcHTiaMe3WsL7zpfzBkDdRk1wDCRKeZ8esHerwX0siaSmuxmM1D70VuQ/132'
-              ],
-              miniProgram: {
-                id: 'gh_09604479aeb7', // 小程序的原始标识
-                webUrl: 'http://www.dcloud.io/'
-              },
+              thumbs: ['http://thirdwx.qlogo.cn/mmopen/vi_32/rgbaiaDTeNzSI6jUiaRsZSian3ynQnNeSGOdcHTiaMe3WsL7zpfzBkDdRk1wDCRKeZ8esHerwX0siaSmuxmM1D70VuQ/132']
+            };
+            msg.content = '分享小程序描述内容。';
+            msg.miniProgram = {
+              id: 'gh_09604479aeb7', // 小程序的原始标识
+              webUrl: 'http://www.dcloud.io/'
             };
             // 发送分享
             if(sweixin.authenticated) {
-              sweixin.send(msg, function() {
-                console.log('分享到"' + srv.description + '"成功！');
-              }, function(e) {
-                console.log('分享到"' + srv.description + '"失败: ' + JSON.stringify(e));
-              });
+              doShare(sweixin, msg);
             } else {
               sweixin.authorize(function() {
-                sweixin.share(msg, function() {
-                  console.log('分享到"' + srv.description + '"成功！');
-                }, function(e) {
-                  console.log('分享到"' + srv.description + '"失败: ' + JSON.stringify(e));
-                });
+                doShare(sweixin, msg);
               }, function(e) {
                 console.log('认证授权失败：' + JSON.stringify(e));
               });
@@ -139,6 +132,14 @@
           }, function(e) {
             alert("获取分享服务列表失败：" + e.message + " - " + e.code);
           });
+
+          function doShare(srv, msg) {
+            srv.send(msg, function() {
+              console.log('分享到"' + srv.description + '"成功！');
+            }, function(e) {
+              console.log('分享到"' + srv.description + '"失败: ' + JSON.stringify(e));
+            });
+          }
         }
         //      "web"-分享网页类型，title（必填）、content（必填）、thumbs（必填）、href（网页url，必填）属性值有效；
         //      "text"-分享文字类型，content（必填）属性值有效； "image"-分享图片类型，pictures（必填）属性值有效； 
