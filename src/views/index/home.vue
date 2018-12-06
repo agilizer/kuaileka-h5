@@ -6,14 +6,15 @@
         <i class="angle-white-bottom"></i>
       </div>
     </div>
-    <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight" style="margin-top: -1px" class="dots-class">
+    <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight" style="margin-top: -1px"
+            class="dots-class">
       <swiper-item class="swiper-banner-img" v-for="(item, index) in bannerList" :key="index">
         <img :src="baseURL+item.src">
       </swiper-item>
     </swiper>
     <div class="announce">
       <div class="cup-acc">
-        <img class="cup" src="../../assets/images/coffee-cup.png" />
+        <img class="cup" src="../../assets/images/coffee-cup.png"/>
         <div class="circle">
           <div class="num">{{cuped}}/{{cupActivityNum}}</div>
           <em :style="{height:cupPercent+'rem',top:1-cupPercent+'rem'}"></em>
@@ -23,7 +24,8 @@
     </div>
     <div class="container product-container">
       <div class="product-list">
-        <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
+        <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub"
+                      :total="totalCount"></product-item>
       </div>
     </div>
     <div class="goto-buy" v-if="isiOS&&isShowARNav" @click="goToPosition">
@@ -38,7 +40,7 @@
 </template>
 
 <script>
-  import { Swiper, SwiperItem } from 'vux'
+  import {Swiper, SwiperItem} from 'vux'
   import ProductItem from '../../components/common/product-item'
   import payPopup from '../../components/common/pay-popup'
   import db from '../../plugins/db'
@@ -49,7 +51,7 @@
 
   import baiduMapWalkNaviPlugin from '../../plugins/baiduMapWalkNaviPlugin'
   import baiduLocationPlugin from '../../plugins/baiduLocationPlugin'
-  import { consolePlugin, xconsole } from '../../plugins/consolePlugin'
+  import {consolePlugin, xconsole} from '../../plugins/consolePlugin'
 
   export default {
     name: 'home',
@@ -97,7 +99,7 @@
         this.swiperInit = true;
       }, 500)
       this.init();
-      if(window.plus) {
+      if (window.plus) {
         this.baiduMapPluginInit();
       } else {
         document.addEventListener("plusready", () => {
@@ -126,7 +128,7 @@
         // 安装日志插件
         consolePlugin();
         this.isiOS = plus.os.name === 'iOS';
-        if(plus.os.name === 'iOS') {
+        if (plus.os.name === 'iOS') {
           // 获取定位数据
           window.plus.baiduLocation.getCurrentPosition((args) => {
             const p = {};
@@ -141,7 +143,7 @@
             xconsole.log(result)
             // 需要处理一下错误信息
             plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
-              if(e.index === 1) {
+              if (e.index === 1) {
                 plus.runtime.openURL("app-settings:")
               }
             }, {
@@ -160,7 +162,7 @@
             //定位成功之后加载home页面
             this.addressDetermine(); //定位
             this.w.close()
-          }, function(e) {
+          }, function (e) {
             //('Geolocation error: ' + e.message);
           }, {
             provider: 'baidu',
@@ -173,7 +175,7 @@
           appid: api.appid,
         })
         this.bannerList = res;
-        if(db.get('userInfo')) this.getMemberInfo();
+        if (db.get('userInfo')) this.getMemberInfo();
       },
       //获取会员信息
       async getMemberInfo() {
@@ -204,27 +206,27 @@
         let mAddress = [],
           kmAddress = [];
         res.forEach(i => {
-          if(i.unit == 'm') {
+          if (i.unit == 'm') {
             mAddress.push(i)
           } else {
             kmAddress.push(i)
           }
         })
         //如果距离单位为m的只有一个，那么最近咖啡机就是这个
-        if(mAddress.length == 1) {
+        if (mAddress.length == 1) {
           this.address = mAddress[0]
-        } else if(mAddress.length > 1) {
+        } else if (mAddress.length > 1) {
           //确定最近的咖啡机（单位为m）
           let min = mAddress[0]
           mAddress.forEach(i => {
-            if(i.distance < min.distance) min = i;
+            if (i.distance < min.distance) min = i;
           })
           this.address = min;
         } else {
           //确定最近的咖啡机（单位为km）
           let min = kmAddress[0]
           kmAddress.forEach(i => {
-            if(i.distance < min.distance) min = i;
+            if (i.distance < min.distance) min = i;
           })
           this.address = min;
         }
@@ -232,11 +234,11 @@
       },
       //超过10km的的咖啡机就不导航了
       hideARNav() {
-        if(this.address.distance > 10 && this.address.unit == 'km') this.isShowARNav = false;
+        if (this.address.distance > 10 && this.address.unit == 'km') this.isShowARNav = false;
       },
       //更换地点页面
       gotoAddressChoose() {
-        if(this.addressWebview) {
+        if (this.addressWebview) {
           plus.webview.show(this.addressWebview, 'slide-in-right');
         } else {
           this.addressWebview = plus.webview.create('address.html', 'address', {
@@ -251,22 +253,23 @@
               progress: {
                 color: '#f7be36'
               }
-            }
+            },
+            userSelect: false
           });
           plus.webview.show(this.addressWebview, 'slide-in-right');
         }
       },
       //订单+
       orderCup(item) {
-        if(this.totalCount > 0) {
+        if (this.totalCount > 0) {
           this.$vux.toast.text('目前仅支持同时购买一份')
         } else {
-          if(this.orderList.length == 0) {
+          if (this.orderList.length == 0) {
             item.num = 1;
             this.orderList.push(item)
           } else {
             this.orderList.forEach(i => {
-              if(item.code == i.code) {
+              if (item.code == i.code) {
                 i.num++
               } else {
                 item.num = 1;
@@ -279,8 +282,8 @@
       //订单-
       orderCupSub(item) {
         this.orderList.forEach((i, index) => {
-          if(item.code == i.code) {
-            if(i.num > 1) {
+          if (item.code == i.code) {
+            if (i.num > 1) {
               i.num--
             } else {
               this.orderList.splice(index, 1)
@@ -289,11 +292,11 @@
         })
       },
       async showPayView() {
-        if(this.orderList.length == 0) {
+        if (this.orderList.length == 0) {
           this.$vux.toast.text('请选择商品')
           return;
         }
-        if(window.plus) {
+        if (window.plus) {
 //        let height = parseInt(plus.webview.currentWebview().getStyle().height);
 //        db.set('homeViewHeight', height);
 //        plus.webview.currentWebview().setStyle({
@@ -303,20 +306,19 @@
         }
 
         //判断是否登录，没有登录则请求登录
-        if(!db.get('userInfo')) {
-          this.$vux.loading.show({
-            text: '登录中...'
-          })
+        this.w = plus.nativeUI.showWaiting('', {
+          padding: '5%'
+        });
+        if (!db.get('userInfo')) {
           let loginRes = await this.wecatLogin();
-          this.$vux.loading.hide();
           //若拒绝微信授权登录则不在执行下一步操作
-          if(loginRes == 201) return;
+          if (loginRes == 201) {
+            this.w.close();
+            return;
+          }
           //获取用户会员信息
           this.getMemberInfo();
         }
-        this.$vux.loading.show({
-          text: '加载中...'
-        })
         //获取用户优惠券
         let res = await this.$http.get(this, api.couponList, {
           openid: db.get('userInfo').openid,
@@ -324,8 +326,8 @@
           effective: true,
           tip: false
         })
-        this.$vux.loading.hide()
-        if(res.success == true) {
+        this.w.close();
+        if (res.success == true) {
           this.couponList = res.result;
           this.payPopupShow = true;
         } else {
@@ -348,7 +350,7 @@
         }, () => {
           this.w.close();
           plus.nativeUI.confirm("请到设置->隐私->定位服务中开启【快乐咖】定位服务，以便于准确获得你的位置信息", (e) => {
-            if(e.index === 1) {
+            if (e.index === 1) {
               var UIApplication = plus.ios.import("UIApplication");
               var NSURL = plus.ios.import("NSURL");
               var setting = NSURL.URLWithString("UIApplicationOpenSettingsURLString");
@@ -366,10 +368,15 @@
     },
     watch: {
       //watch咖啡机的变化更新相应的咖啡机产品
-      async 'address.machineCode' (value) {
+      async 'address.machineCode'(value) {
+        this.w = plus.nativeUI.showWaiting('', {
+          padding: '5%'
+        });
         let res = await this.$http.get(this, api.productList, {
           machineCode: value
-        })
+        });
+        this.w.close();
+        xconsole.log(JSON.stringify(res));
         this.productList = res;
         this.orderList = [];
       },

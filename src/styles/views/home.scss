@@ -1,4 +1,6 @@
 .home{
+  background-color: white;
+  min-height: 100vh;
 }
 .address-container {
     height: .8rem;
@@ -81,7 +83,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: -.3rem;
     padding-bottom: 1.2rem;
     .product-item {
         width: 3.4rem;
@@ -98,7 +99,11 @@
             flex-shrink: 0;
             border-radius: .24rem;
             overflow: hidden;
+            img {
+                border-radius: .24rem;
+            }
         }
+
         .intro {
             width: 1.9rem;
             h2 {

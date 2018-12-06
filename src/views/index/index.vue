@@ -145,11 +145,13 @@
             }
           },
           bounce: 'vertical',
-          height: this.fixHeight() + 'px',
+          userSelect: false,
+          height: this.fixHeight(),
           bottom: plus.os.name === 'iOS' ? null : (this.fixBottom() + 'px'),
           bounceBackground: '#f4f4f4',
-          transition:{
-          	duration:'.3s'
+          background: "transparent",
+          transition: {
+            duration: '.3s'
           }
         });
       },

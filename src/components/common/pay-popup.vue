@@ -3,31 +3,31 @@
     <h2 class="title">支付</h2>
     <swiper height="3.9rem" class="coupon-list" :show-dots="false">
       <swiper-item class="no-coupon" v-if="couponList.length==0">
-        <img src="../../assets/images/im_zwyhq.png" />
+        <img src="../../assets/images/im_zwyhq.png"/>
         <p class="tip">暂无优惠券</p>
       </swiper-item>
       <template v-if="couponList.length>0">
         <swiper-item v-for="(item, index) in couponList" :key="index">
           <label>
-	        <div class="coupon-item">
-	          <h2>{{item.typeName}}</h2>
-	          <div class="price">
-	            <template v-if="item.type=='DISCOUNT'">
-	              <i>￥</i>
-	              <span>{{item.discount}}</span>
-	            </template>
-	            <img v-else="" src="../../assets/images/coffee-cup.png" style="width:1.65rem;" />
-	          </div>
-	          <div class="info">
-	            <p>截止日期：{{item.endTime}}</p>
-	            <p>来源：{{item.desc}}</p>
-	          </div>
-	        </div>
-	        <div class="coupon-checked">
-	        	<span>使用本优惠券</span>
-	        	<input type="checkbox" class="input-checkbox" :value="item" v-model="couponValue" @change="couponChange"/>
-	       	</div>
-        </label>
+            <div class="coupon-item">
+              <h2>{{item.typeName}}</h2>
+              <div class="price">
+                <template v-if="item.type=='DISCOUNT'">
+                  <i>￥</i>
+                  <span>{{item.discount}}</span>
+                </template>
+                <img v-else="" src="../../assets/images/coffee-cup.png" style="width:1.65rem;"/>
+              </div>
+              <div class="info">
+                <p>截止日期：{{item.endTime}}</p>
+                <p>来源：{{item.desc}}</p>
+              </div>
+            </div>
+            <div class="coupon-checked">
+              <span>使用本优惠券</span>
+              <input type="checkbox" class="input-checkbox" :value="item" v-model="couponValue" @change="couponChange"/>
+            </div>
+          </label>
         </swiper-item>
       </template>
     </swiper>
@@ -48,10 +48,11 @@
 </template>
 
 <script>
-  import { Swiper, SwiperItem, Popup } from 'vux'
-  import { ModalHelper } from '../../plugins/utils'
+  import {Swiper, SwiperItem, Popup} from 'vux'
+  import {ModalHelper} from '../../plugins/utils'
   import db from '../../plugins/db'
   import api from '../../service/api'
+
   let homeViewHeight = db.get('homeViewHeight')
   let tabbarHeight = db.get('tabbarHeight')
   export default {
@@ -78,7 +79,8 @@
         couponValue: [],
       }
     },
-    created() {},
+    created() {
+    },
     computed: {
       //总价
       totalAmount() {
@@ -90,8 +92,8 @@
       },
       //优惠券折扣
       couponSub() {
-        if(this.couponValue.length == 0) return 0;
-        if(this.couponValue[0].type == 'FREE') {
+        if (this.couponValue.length == 0) return 0;
+        if (this.couponValue[0].type == 'FREE') {
           return this.orderList[0].normalPrice;
         } else {
           return this.couponValue[0].discount
@@ -99,14 +101,15 @@
       },
       //结算价格
       payValue() {
-        return(this.orderList[0].normalPrice - this.couponSub).toFixed(2)
+        return (this.orderList[0].normalPrice - this.couponSub).toFixed(2)
       }
     },
     methods: {
       couponChange() {
-        if(this.couponValue.length == 0) return;
-        if(this.couponValue.length > 1) this.couponValue.shift();
-        if(this.couponValue[0].type == 'DISCOUNT') {}
+        if (this.couponValue.length == 0) return;
+        if (this.couponValue.length > 1) this.couponValue.shift();
+        if (this.couponValue[0].type == 'DISCOUNT') {
+        }
       },
       hidePopup() {
         this.$emit('input', false); //点击遮罩时传递false关闭
@@ -119,12 +122,12 @@
           effective: true,
           tip: false
         })
-        if(res.success == true) {
+        if (res.success == true) {
           this.couponList = res.result;
         }
       },
       gotoUserOrder(item) {
-        if(window.plus) {
+        if (window.plus) {
           item.webview = plus.webview.create('userOrder.html', 'userOrder', {
             'popGesture': 'close',
             'backButtonAutoControl': 'close',
@@ -153,7 +156,7 @@
         //优惠券id
         let couponId = this.couponValue[0] ? this.couponValue[0].id : ''
         //余额支付
-        if(this.payWay == 'balance') {
+        if (this.payWay == 'balance') {
           res = await this.$http.post(this, api.preparePay, {
             appid: api.appid,
             openid: db.get('userInfo').openid,
@@ -166,15 +169,15 @@
             couponId: couponId,
             payType: 'balance_qr'
           })
-          if(res.success) {
+          if (res.success) {
             this.$emit('input', false) //关闭付款弹出框
             let payCompleteRes = await this.$http.post(this, api.payComplete, {
               chargeId: res.result.chargeId,
               rId: '', //扫码进入rId,
               success: res.success, //状态,
             })
-            if(payCompleteRes.success) {
-              plus.nativeUI.alert("付款成功！", function() {
+            if (payCompleteRes.success) {
+              plus.nativeUI.alert("付款成功！", function () {
                 _this.gotoUserOrder
               });
             }
@@ -197,36 +200,38 @@
           })
           //console.log(JSON.stringify(res))
           // 获取支付通道
-          plus.payment.getChannels(function(channels) {
+          plus.payment.getChannels(function (channels) {
             channel = channels[1];
-            plus.payment.request(channel, 's', function(result) {
-              plus.nativeUI.alert("支付成功！", function() {
+            plus.payment.request(channel, 's', function (result) {
+              plus.nativeUI.alert("支付成功！", function () {
                 _this.gotoUserOrder
               });
-            }, function(error) {
+            }, function (error) {
               plus.nativeUI.alert("支付失败：" + error.code);
             });
-          }, function(e) {
+          }, function (e) {
             alert("获取支付通道失败：" + e.message);
           });
         }
         let channel = null;
+
         // 1. 获取支付通道
         function plusReady() {
           // 获取支付通道
-          plus.payment.getChannels(function(channels) {
+          plus.payment.getChannels(function (channels) {
             channel = channels[0];
-            plus.payment.request(channel, s, function(result) {
-              plus.nativeUI.alert("支付成功！", function() {
+            plus.payment.request(channel, s, function (result) {
+              plus.nativeUI.alert("支付成功！", function () {
                 back();
               });
-            }, function(error) {
+            }, function (error) {
               plus.nativeUI.alert("支付失败：" + error.code);
             });
-          }, function(e) {
+          }, function (e) {
             alert("获取支付通道失败：" + e.message);
           });
         }
+
         //service = \"mobile.securitypay.pay\"&partner=\"2088801273866834\"&_input_charset=\"UTF-8\"&out_trade_no=\"20181105073818\"&subject=\"DCloud项目捐赠\"&payment_type=\"1\"&seller_id=\"payservice@dcloud.io\"&total_fee=\"10\"&body=\"DCloud致力于打造HTML5最好的移动开发工具，包括终端的Runtime、云端的服务和IDE，同时提供各项配套的开发者服务。\"&it_b_pay=\"1d\"&notify_url=\"http%3A%2F%2Fdemo.dcloud.net.cn%2Fhelloh5%2Fpayment%2Fnotify.php\"&show_url=\"http%3A%2F%2Fdemo.dcloud.net.cn%2Fhelloh5%2Fpayment%2F\"&sign=\"WEnrOSRDWRL2IJt8w%2FLkUqnwjndOead%2BfyUxMWyhUt7j2SinI9GdzxK95byo6cnJ68vQEF50Xp2ltGTjmO3IIaCumUCaUeKhT3NiozXya772Q2uswgKALqtvSy7%2BNJlK4qm3TXbGnzdr3zJ8bS8A3j5gFHy5SxvSRmvw%2BK1yLAw%3D\"&sign_type=\"RSA\""
         //      let ALIPAYSERVER = 'http://demo.dcloud.net.cn/helloh5/payment/alipay.php?total=';
         //      let WXPAYSERVER = 'http://demo.dcloud.net.cn/helloh5/payment/wxpay.php?total=';
@@ -268,7 +273,15 @@
     watch: {
       value(val) {
         this.popupShow = val;
-        if(val) {
+        const currentWebview = plus.webview.currentWebview();
+        let webviewStyle = currentWebview.getStyle();
+        if (val) {
+          webviewStyle['bounce'] = 'none';
+        } else {
+          webviewStyle['bounce'] = 'vertical';
+        }
+        currentWebview.setStyle(webviewStyle);
+        if (val) {
           ModalHelper.afterOpen();
         } else {
           ModalHelper.beforeClose();
@@ -286,14 +299,14 @@
     }
   }
 </script>
-<style lang="scss">
+<style lang="scss" type="text/scss">
   .coupon-list .coupon-item {
     background: url(../../assets/images/im_yhqbg.png) center / cover;
     &.disabled {
       background-image: url(../../assets/images/im_yhqbg2.png);
     }
   }
-  
+
   .pay-view {
     .input-checkbox,
     .input-radio {
