@@ -1,7 +1,8 @@
-.home{
-  background-color: white;
-  min-height: 100vh;
+.home {
+    background-color: white;
+    min-height: 100vh;
 }
+
 .address-container {
     height: .8rem;
     .address-top {
@@ -103,7 +104,6 @@
                 border-radius: .24rem;
             }
         }
-
         .intro {
             width: 1.9rem;
             h2 {
@@ -135,6 +135,13 @@
             }
         }
     }
+}
+
+.no-product {
+    text-align: center;
+    color: #999999;
+    font-size: .24rem;
+    margin-top: 1rem;
 }
 
 .button-buy,

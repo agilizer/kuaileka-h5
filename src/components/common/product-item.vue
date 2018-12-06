@@ -1,7 +1,7 @@
 <template>
   <div class="product-item">
     <div class="img">
-      <img src="../../assets/images/im_bnt.png" />
+      <img :src='itemImg' />
     </div>
     <div class="intro">
       <h2 class="ellipsis">{{item.name}}</h2>
@@ -17,21 +17,32 @@
 
 <script>
   export default {
+    components: {},
     props: {
       item: {},
       total: {
         type: Number
       },
     },
-    components: {},
     data() {
       return {
         num: 0, //数量
       }
     },
+    created() {
+
+    },
     computed: {
       subDisable() {
         if(this.num == 0) return true;
+      },
+      itemImg() {
+        for(let i = 101; i < 157; i++) {
+          if(i == this.item.code) {
+            return require('../../assets/images/' + this.item.code + '.png')
+          }
+        }
+        return require('../../assets/images/default.png')
       }
     },
     methods: {
