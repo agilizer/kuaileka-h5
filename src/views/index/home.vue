@@ -1,34 +1,34 @@
 <template>
   <div class="home">
-    <div class="address-container" @click="gotoAddressChoose">
-      <div class="address-top">
-        <span>{{address.name}}</span>
-        <i class="angle-white-bottom"></i>
-      </div>
-    </div>
-    <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight" style="margin-top: -1px" class="dots-class">
-      <swiper-item class="swiper-banner-img" v-for="(item, index) in bannerList" :key="index">
-        <img :src="baseURL+item.src">
-      </swiper-item>
-    </swiper>
-    <div class="announce">
-      <div class="cup-acc">
-        <img class="cup" src="../../assets/images/coffee-cup.png" />
-        <div class="circle">
-          <div class="num">{{cuped}}/{{cupActivityNum}}</div>
-          <em :style="{height:cupPercent+'rem',top:1-cupPercent+'rem'}"></em>
+    <me-scroll :style="{'height':scrollerHeight}" @down="meDown" :up=meScrollUp @init="meInit">
+      <div class="address-container" @click="gotoAddressChoose">
+        <div class="address-top">
+          <span>{{address.name}}</span>
+          <i class="angle-white-bottom"></i>
         </div>
       </div>
-      <p>{{levelName}}： 再次消费{{cupUpgrade}}次可获得免费优惠券</p>
-    </div>
-    <div class="container product-container">
-      <div class="product-list" v-if="productList.length>0">
-        <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
+      <swiper v-if='swiperInit' loop dots-position="center" :height="swiperHeight" style="margin-top: -1px" class="dots-class">
+        <swiper-item class="swiper-banner-img" v-for="(item, index) in bannerList" :key="index">
+          <img :src="baseURL+item.src">
+        </swiper-item>
+      </swiper>
+      <div class="announce">
+        <div class="cup-acc">
+          <img class="cup" src="../../assets/images/coffee-cup.png" />
+          <div class="circle">
+            <div class="num">{{cuped}}/{{cupActivityNum}}</div>
+            <em :style="{height:cupPercent+'rem',top:1-cupPercent+'rem'}"></em>
+          </div>
+        </div>
+        <p>{{levelName}}： 再次消费{{cupUpgrade}}次可获得免费优惠券</p>
       </div>
-      <div class="no-product" v-else>
-        暂无饮品信息...
+      <div class="container product-container">
+        <div class="product-list" v-if="productList.length>0">
+          <product-item v-for=" i in productList" :key="i.code" :item="i" @order="orderCup" @orderSub="orderCupSub" :total="totalCount"></product-item>
+        </div>
+        <div class="no-product" v-else>暂无饮品信息...</div>
       </div>
-    </div>
+    </me-scroll>
     <div class="goto-buy" v-if="isiOS&&isShowARNav" @click="goToPosition">
       <span>去这里</span>
     </div>
@@ -42,6 +42,7 @@
 
 <script>
   import { Swiper, SwiperItem } from 'vux'
+  import MeScroll from '../../components/common/me-scroll.vue'
   import ProductItem from '../../components/common/product-item'
   import payPopup from '../../components/common/pay-popup'
   import db from '../../plugins/db'
@@ -61,7 +62,8 @@
       Swiper,
       SwiperItem,
       ProductItem,
-      payPopup
+      payPopup,
+      MeScroll
     },
     data() {
       return {
@@ -85,6 +87,10 @@
         isiOS: false,
         couponList: [], //优惠券列表
         isShowARNav: true,
+        scrollerHeight: '100vh',
+        meScrollUp: {
+          use: false,
+        },
       }
     },
     created() {
@@ -120,6 +126,30 @@
       }
     },
     methods: {
+      //mescroll初始化
+      meInit(mescroll) {
+        this.mescroll = mescroll;
+      },
+      async meDown() {
+        this.init();
+        if(window.plus) {
+          this.baiduMapPluginInit();
+        } else {
+          document.addEventListener("plusready", () => {
+            this.baiduMapPluginInit();
+          }, false);
+        }
+        let w = plus.nativeUI.showWaiting('', {
+          padding: '5%'
+        });
+        let res = await this.$http.get(this, api.productList, {
+          machineCode: this.address.machineCode
+        });
+        w.close();
+        this.productList = res;
+        this.orderList = [];
+        this.mescroll.endErr();
+      },
       baiduMapPluginInit() {
         this.w = plus.nativeUI.showWaiting('', {
           padding: '5%'
@@ -313,8 +343,10 @@
         if(!db.get('userInfo')) {
           let loginRes = await this.wecatLogin();
           //若拒绝微信授权登录则不在执行下一步操作
-          if(loginRes == 201) {
+          if(loginRes != 200) {
             this.w.close();
+            if(loginRes == 400) this.$vux.toast.text('网络请求异常，请检查是否允许应用访问网络。');
+            if(loginRes == 201) this.$vux.toast.text('拒绝授权，微信登录失败');
             return;
           }
           //获取用户会员信息

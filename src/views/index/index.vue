@@ -1,9 +1,8 @@
 <template>
   <div class="index">
     <tabbar ref="tabbarIndex" :class="{'iphone-x-bottom':isIphoneX}">
-      <tabbar-item v-for="(tabbar,index) in tabbarItems" @on-item-click="tabbarItemClick(index)"
-                   :selected="currentIndex == index" :show-dot="tabbar.showDot" :key="tabbar.id">
-        <img class="tabbar-img" slot="icon" :src="tabbar['icon'+(currentIndex == index?1:0)]"/>
+      <tabbar-item v-for="(tabbar,index) in tabbarItems" @on-item-click="tabbarItemClick(index)" :selected="currentIndex == index" :show-dot="tabbar.showDot" :key="tabbar.id">
+        <img class="tabbar-img" slot="icon" :src="tabbar['icon'+(currentIndex == index?1:0)]" />
       </tabbar-item>
     </tabbar>
   </div>
@@ -20,7 +19,7 @@
   import iPhoneXSafearea from '../../plugins/mixins/iphoneX-safe-area'
 
   import baiduLocationPlugin from '../../plugins/baiduLocationPlugin'
-  import {consolePlugin, xconsole} from '../../plugins/consolePlugin'
+  import { consolePlugin, xconsole } from '../../plugins/consolePlugin'
 
   export default {
     name: 'index',
@@ -85,7 +84,7 @@
         wb.append(this.tabbarItems[0].webview);
         this.currentIndex = 0
       }
-      if (window.plus) {
+      if(window.plus) {
         this.init();
       } else {
         document.addEventListener("plusready", () => {
@@ -99,7 +98,7 @@
         plus.navigator.setStatusBarBackground('#404040');
         plus.navigator.setStatusBarStyle('light');
         let outTime = 0;
-        if (plus.os.name === 'Android') outTime = 500; //延迟加载webview, Android系统500ms延迟，iOS不用
+        if(plus.os.name === 'Android') outTime = 500; //延迟加载webview, Android系统500ms延迟，iOS不用
         setTimeout(() => {
           this.tabbarItems[this.currentIndex].webview = this.createWebview(this.tabbarItems[this.currentIndex]);
           plus.webview.currentWebview().append(this.tabbarItems[this.currentIndex].webview);
@@ -114,7 +113,7 @@
       // 网络环境发生变化
       onNetChange() {
         const nt = plus.networkinfo.getCurrentType();
-        switch (nt) {
+        switch(nt) {
           case plus.networkinfo.CONNECTION_ETHERNET:
           case plus.networkinfo.CONNECTION_WIFI:
 
@@ -158,25 +157,29 @@
       //append的webview的高度（除去tabbar高度）
       fixHeight() {
         let tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight;
-        if (this.currentIndex == 0) db.set('clientHeight', document.documentElement.clientHeight);
+        if(this.currentIndex == 0) db.set('clientHeight', document.documentElement.clientHeight);
         return document.documentElement.clientHeight - tabbarHeight;
       },
       fixBottom() {
         let tabbarHeight = 0;
         tabbarHeight = this.$refs.tabbarIndex.$el.scrollHeight
-        if (this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
+        if(this.currentIndex == 0) db.set('tabbarHeight', tabbarHeight);
         return tabbarHeight;
       },
       //底部tabbar切换
       async tabbarItemClick(index) {
-        if (!window.plus) return; //判断是不是移动设备环境
+        if(!window.plus) return; //判断是不是移动设备环境
         //判断是否登录
-        if (!db.get('userInfo')) {
+        if(!db.get('userInfo')) {
           let loginRes = await this.wecatLogin();
-          if (loginRes == 201) return;
+          if(loginRes != 200) {
+            if(loginRes == 400) this.$vux.toast.text('网络请求异常，请检查是否允许应用访问网络。');
+            if(loginRes == 201) this.$vux.toast.text('拒绝授权，微信登录失败');
+            return;
+          }
         }
         //webview没有要创建
-        if (!this.tabbarItems[index].webview) {
+        if(!this.tabbarItems[index].webview) {
           this.tabbarItems[index].webview = this.createWebview(this.tabbarItems[index]);
         }
         const wb = plus.webview.currentWebview();

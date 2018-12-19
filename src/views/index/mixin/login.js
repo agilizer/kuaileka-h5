@@ -19,11 +19,13 @@ const mixin = {
                 db.set('userInfo', s.userInfo);
                 resolve(200);
               }, function(e) {
-                //("获取用户信息失败：" + e.message + " - " + e.code); 
-                resolve(201);
+                //("获取用户信息失败：" + e.message + " - " + e.code);
+                //可能是网络问题
+                resolve(400);
               });
             }, function(e) {
               //("登录认证失败！");
+              //用户拒绝授权登录
               resolve(201);
             });
           } else {
@@ -34,7 +36,8 @@ const mixin = {
           }
         }, function(e) {
           //("获取分享服务列表失败：" + e.message + " - " + e.code);
-          resolve(201);
+          //可能是网络问题
+          resolve(400);
         });
       })
       return p;
